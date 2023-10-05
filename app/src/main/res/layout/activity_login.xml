@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:background="#FFFFFF">
+
+    <ImageView
+        android:layout_width="330dp"
+        android:layout_height="320dp"
+        android:src="@drawable/app_logo"
+        android:layout_gravity="center"/>
+
+    <EditText
+        android:id="@+id/emailEditText"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:layout_marginTop="10dp"
+        android:textColorHint="#A9A9A9"
+        android:hint="Adres e-mail"
+        android:inputType="textEmailAddress"
+        android:textColor="#000000"
+        android:background="@drawable/edittext_bg"
+        android:paddingStart="8dp"
+        android:paddingEnd="8dp" />
+
+    <EditText
+        android:id="@+id/passwordEditText"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:layout_marginTop="18dp"
+        android:background="@drawable/edittext_bg"
+        android:hint="Hasło"
+        android:textColorHint="#A9A9A9"
+        android:inputType="textPassword"
+        android:paddingStart="8dp"
+        android:paddingEnd="8dp"
+        android:textColor="#000000" />
+
+    <Button
+        android:id="@+id/loginButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Zaloguj się"
+        android:textColor="#FFFFFF"
+        android:layout_marginTop="16dp"
+        android:background="@drawable/rounded_button"/>
+
+    <Button
+        android:id="@+id/registerButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Zarejestruj się"
+        android:textColor="#FFFFFF"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/rounded_button"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="30dp"
+        android:gravity="center"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/google_icon" />
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="30dp"
+            android:src="@drawable/facebook_icon" />
+    </LinearLayout>
+
+</LinearLayout>

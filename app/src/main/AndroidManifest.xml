@@ -23,6 +23,19 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".LoginActivity"
+            android:label="Login Activity"
+            android:theme="@style/Theme.AppCompat">
+
+            <!-- Ta aktywność może mieć dodatkowe deklaracje i filtry intencji, jeśli są potrzebne -->
+        </activity>
+        <activity
+            android:name=".RegistrationActivity"
+            android:label="Registration Activity"
+            android:theme="@style/Theme.AppCompat">
+            <!-- Ta aktywność może mieć dodatkowe deklaracje i filtry intencji, jeśli są potrzebne -->
+        </activity>
     </application>
 
 </manifest>
