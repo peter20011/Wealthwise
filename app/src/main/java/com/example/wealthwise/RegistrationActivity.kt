@@ -4,11 +4,8 @@ package com.example.wealthwise
 import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import android.widget.Button
 import android.widget.ImageView
-import android.widget.LinearLayout
-import android.widget.ScrollView
-import androidx.core.widget.NestedScrollView
+
 
 class RegistrationActivity : AppCompatActivity() {
 

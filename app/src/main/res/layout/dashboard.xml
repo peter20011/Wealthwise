@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:background="#FFFFFF">
+
+    <!-- Przycisk Wylogowania -->
+    <Button
+        android:id="@+id/logoutButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="#FFFFFF"
+        android:backgroundTint="#a3acbd"
+        android:text="Wyloguj się"
+        android:layout_marginBottom="10dp"
+        />
+
+    <!-- Pasek Nawigacyjny (Bottom Navigation Bar) -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center">
+
+        <ImageView
+            android:id="@+id/homeIcon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/home_icon"
+            android:layout_weight="1"
+            android:clickable="true"
+            android:onClick="navigateToHome" />
+
+        <ImageView
+            android:id="@+id/statisticIcon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/statistic_icon"
+            android:layout_weight="1"
+            android:clickable="true"
+            android:onClick="navigateToStatistic" />
+
+        <ImageView
+            android:id="@+id/profileIcon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/profile_icon"
+            android:layout_weight="1"
+            android:clickable="true"
+            android:onClick="navigateToProfile" />
+
+        <ImageView
+            android:id="@+id/assetsIcon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/assets_icon"
+            android:layout_weight="1"
+            android:clickable="true"
+            android:onClick="navigateToAssets" />
+    </LinearLayout>
+
+    <!-- Przyciski "Dochód" i "Expense" z odstępem między nimi -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="16dp">
+
+        <Button
+            android:id="@+id/incomeButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Dochód"
+            android:background="@drawable/rounded_button"
+            android:textColor="#FFFFFF"
+            android:onClick="showIncomeField" />
+
+        <Button
+            android:id="@+id/expenseButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Expense"
+            android:background="@drawable/rounded_button"
+            android:textColor="#FFFFFF"
+            android:backgroundTint="#a3acbd"
+            android:onClick="showExpenseField"
+            android:layout_marginStart="8dp" <!-- Dodany odstęp po lewej stronie -->
+        />
+    </LinearLayout>
+
+    <!-- Pole tekstowe dla dochodu -->
+    <EditText
+        android:id="@+id/incomeEditText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Podaj dochód"
+        android:layout_marginTop="8dp"
+        android:visibility="gone" />
+
+    <!-- Pole tekstowe dla wydatku i wybór kategorii -->
+    <EditText
+        android:id="@+id/expenseEditText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Podaj wydatek"
+        android:layout_marginTop="8dp"
+        android:visibility="gone" />
+
+    <Spinner
+        android:id="@+id/categorySpinner"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:visibility="gone" />
+
+    <!-- Wykres kołowy -->
+    <com.github.mikephil.charting.charts.PieChart
+        android:id="@+id/pieChart"
+        android:layout_width="match_parent"
+        android:layout_height="300dp"
+        android:layout_marginTop="16dp"
+        />
+
+    <!-- Miejsce na wyświetlanie 5 ostatnich wydatków -->
+    <ListView
+        android:id="@+id/expensesListView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp" />
+</LinearLayout>
