@@ -20,8 +20,8 @@ class LoginActivity : AppCompatActivity() {
             // Na przykład, jeśli zalogowano pomyślnie, można użyć poniższej linii kodu
             // do przejścia do aktywności głównej (MainActivity):
 
-            // val intent = Intent(this, MainActivity::class.java)
-            // startActivity(intent)
+             val intent = Intent(this, DashboardActivity::class.java)
+             startActivity(intent)
         }
 
         registerButton.setOnClickListener {

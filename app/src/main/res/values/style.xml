@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="AlertDialogTheme" parent="Theme.AppCompat.Light.Dialog.Alert">
+        <!-- Styl dla całego AlertDialog -->
+        <item name="android:windowBackground">@drawable/rounded_dialog_background</item> <!-- Możesz dostosować tło -->
+        <item name="android:textColorPrimary">#000000</item> <!-- Kolor tekstu -->
+        <item name="android:editTextColor">#000000</item> <!-- Kolor wprowadzanego tekstu -->
+    </style>
+
+    <style name="AlertDialogButtonStyle" parent="Widget.AppCompat.Button.ButtonBar.AlertDialog">
+        <!-- Styl dla przycisków w AlertDialog -->
+        <item name="android:textColor">#00796B</item> <!-- Kolor tekstu przycisków -->
+        <item name="android:background">@drawable/rounded_button</item> <!-- Styl przycisków -->
+    </style>
+</resources>

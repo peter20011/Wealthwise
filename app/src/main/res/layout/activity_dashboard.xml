@@ -8,16 +8,35 @@
     android:padding="16dp"
     android:background="#FFFFFF">
 
-    <!-- Przycisk Wylogowania -->
-    <Button
-        android:id="@+id/logoutButton"
-        android:layout_width="wrap_content"
+    <!-- Przycisk Wylogowania i tekst "Witaj [imię użytkownika]" -->
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textColor="#FFFFFF"
-        android:backgroundTint="#a3acbd"
-        android:text="Wyloguj się"
-        android:layout_marginBottom="10dp"
-        />
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
+
+        <Button
+            android:id="@+id/logoutButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="#FFFFFF"
+            android:backgroundTint="#a3acbd"
+            android:text="Wyloguj się"
+            android:layout_marginStart="10dp"
+            android:gravity="center"
+            android:layout_centerVertical="true" />
+
+        <TextView
+            android:id="@+id/welcomeText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text=""
+            android:textSize="18sp"
+            android:textColor="#000000"
+            android:layout_marginEnd="10dp"
+            android:gravity="end"
+            android:layout_centerVertical="true" />
+    </LinearLayout>
 
     <!-- Pasek Nawigacyjny (Bottom Navigation Bar) -->
     <LinearLayout
@@ -90,8 +109,7 @@
             android:textColor="#FFFFFF"
             android:backgroundTint="#a3acbd"
             android:onClick="showExpenseField"
-            android:layout_marginStart="8dp" <!-- Dodany odstęp po lewej stronie -->
-        />
+            android:layout_marginStart="8dp" />
     </LinearLayout>
 
     <!-- Pole tekstowe dla dochodu -->
@@ -101,6 +119,7 @@
         android:layout_height="wrap_content"
         android:hint="Podaj dochód"
         android:layout_marginTop="8dp"
+        android:layout_marginLeft="3dp"
         android:visibility="gone" />
 
     <!-- Pole tekstowe dla wydatku i wybór kategorii -->
@@ -110,6 +129,7 @@
         android:layout_height="wrap_content"
         android:hint="Podaj wydatek"
         android:layout_marginTop="8dp"
+        android:layout_marginLeft="3dp"
         android:visibility="gone" />
 
     <Spinner
@@ -119,18 +139,31 @@
         android:layout_marginTop="8dp"
         android:visibility="gone" />
 
-    <!-- Wykres kołowy -->
-    <com.github.mikephil.charting.charts.PieChart
-        android:id="@+id/pieChart"
+    <!-- Wykres kołowy z lekkim obramowaniem -->
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="300dp"
+        android:layout_height="450dp"
         android:layout_marginTop="16dp"
-        />
+        >
 
-    <!-- Miejsce na wyświetlanie 5 ostatnich wydatków -->
-    <ListView
-        android:id="@+id/expensesListView"
+        <com.github.mikephil.charting.charts.PieChart
+            android:id="@+id/pieChart"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+    </FrameLayout>
+
+    <!-- Miejsce na wyświetlanie ostatnich wydatków z lekkim obramowaniem -->
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp" />
+        android:layout_marginTop="16dp"
+        android:background="@drawable/gray_border">
+
+        <ListView
+            android:id="@+id/expensesListView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+    </FrameLayout>
 </LinearLayout>

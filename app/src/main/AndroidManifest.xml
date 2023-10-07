@@ -36,6 +36,11 @@
             android:theme="@style/Theme.AppCompat">
             <!-- Ta aktywność może mieć dodatkowe deklaracje i filtry intencji, jeśli są potrzebne -->
         </activity>
+        <activity
+            android:name=".DashboardActivity"
+            android:label="Dashboard Activity"
+            android:theme="@style/Theme.AppCompat">
+        </activity>
     </application>
 
 </manifest>
