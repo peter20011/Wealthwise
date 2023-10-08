@@ -34,12 +34,10 @@
                 android:id="@+id/welcomeText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text=""
                 android:textSize="18sp"
                 android:textColor="#000000"
-                android:layout_marginEnd="10dp"
-                android:gravity="end"
-                android:layout_centerVertical="true" />
+                android:layout_marginLeft="95dp"
+                 />
         </LinearLayout>
 
         <!-- Pasek Nawigacyjny (Bottom Navigation Bar) -->
@@ -47,7 +45,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:gravity="center">
+            android:gravity="center"
+            android:layout_marginTop="10dp">
 
             <ImageView
                 android:id="@+id/homeIcon"
@@ -56,6 +55,7 @@
                 android:src="@drawable/home_icon"
                 android:layout_weight="1"
                 android:clickable="true"
+                android:background="@drawable/blue_border"
                 android:onClick="navigateToHome" />
 
             <ImageView
@@ -65,6 +65,7 @@
                 android:src="@drawable/statistic_icon"
                 android:layout_weight="1"
                 android:clickable="true"
+                android:background="@drawable/blue_border"
                 android:onClick="navigateToStatistic" />
 
             <ImageView
@@ -74,6 +75,7 @@
                 android:src="@drawable/profile_icon"
                 android:layout_weight="1"
                 android:clickable="true"
+                android:background="@drawable/blue_border"
                 android:onClick="navigateToProfile" />
 
             <ImageView
@@ -83,6 +85,7 @@
                 android:src="@drawable/assets_icon"
                 android:layout_weight="1"
                 android:clickable="true"
+                android:background="@drawable/blue_border"
                 android:onClick="navigateToAssets" />
         </LinearLayout>
 
@@ -160,7 +163,8 @@
         <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp">
+            android:layout_marginTop="16dp"
+            android:background="@drawable/blue_border">
 
             <ListView
                 android:id="@+id/expensesListView"

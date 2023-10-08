@@ -41,6 +41,11 @@
             android:label="Dashboard Activity"
             android:theme="@style/Theme.AppCompat">
         </activity>
+        <activity
+            android:name=".UserProfileActivity"
+            android:label="User Profile Activity"
+            android:theme="@style/Theme.AppCompat">
+        </activity>
     </application>
 
 </manifest>

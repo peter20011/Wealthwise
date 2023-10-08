@@ -28,7 +28,6 @@ class DashboardActivity : AppCompatActivity() {
     private lateinit var expensesListView: ListView
     private lateinit var welcomeText: TextView
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_dashboard)
@@ -43,13 +42,27 @@ class DashboardActivity : AppCompatActivity() {
         expensesListView = findViewById(R.id.expensesListView)
         welcomeText = findViewById(R.id.welcomeText)
 
+        val homeIcon = findViewById<ImageView>(R.id.homeIcon)
+        val statisticIcon = findViewById<ImageView>(R.id.statisticIcon)
+        val profileIcon = findViewById<ImageView>(R.id.profileIcon)
+        val assetsIcon = findViewById<ImageView>(R.id.assetsIcon)
+
         val logoutButton = findViewById<Button>(R.id.logoutButton)
+
+        homeIcon.setBackgroundResource(R.drawable.blue_border)
+        statisticIcon.setBackgroundResource(0) // Usuwa tło lub obramowanie
+        profileIcon.setBackgroundResource(0)
+        assetsIcon.setBackgroundResource(0)
 
         logoutButton.setOnClickListener {
             val intent = Intent(this, LoginActivity::class.java)
             startActivity(intent)
         }
 
+        profileIcon.setOnClickListener{
+            val intent=Intent(this,UserProfileActivity::class.java)
+            startActivity(intent)
+        }
 
         // Ustawienie tekstu powitania
         val username = "John"
@@ -130,8 +143,6 @@ class DashboardActivity : AppCompatActivity() {
         }
 
         // Przykładowe dane dla wykresu kołowego
-
-
         val entries = ArrayList<PieEntry>()
         val dataSet = PieDataSet(entries, "Twoje ostatnie wydatki")
         entries.add(PieEntry(30f, "Żywność"))
@@ -140,7 +151,6 @@ class DashboardActivity : AppCompatActivity() {
         entries.add(PieEntry(15f, "Rachunki"))
         entries.add(PieEntry(25f, "Ubranie"))
 
-
         dataSet.colors = ArrayList<Int>()
         dataSet.colors.add(resources.getColor(R.color.teal_200))
         dataSet.colors.add(resources.getColor(R.color.teal_700))
@@ -148,8 +158,8 @@ class DashboardActivity : AppCompatActivity() {
         dataSet.colors.add(resources.getColor(R.color.purple_500))
         dataSet.colors.add(resources.getColor(R.color.purple_700))
 
-        dataSet.valueTextSize=18f
-
+        dataSet.valueTextSize = 18f
+        dataSet.setValueTextColor(resources.getColor(R.color.white))
         val data = PieData(dataSet)
         pieChart.data = data
         pieChart.description.isEnabled = false
@@ -172,8 +182,6 @@ class DashboardActivity : AppCompatActivity() {
 
         val expenseAdapter = ExpenseAdapter(this, expensesList)
         expensesListView.adapter = expenseAdapter
-
-
     }
 }
 

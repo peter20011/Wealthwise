@@ -1,5 +1,5 @@
 <!-- res/layout/activity_registration.xml -->
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/scrollView"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
@@ -7,85 +7,85 @@
     <LinearLayout
         android:id="@+id/containerLayout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
+        android:background="#FFFFFF"
         android:orientation="vertical"
-        android:padding="20dp"
-        android:background="#FFFFFF">
+        android:padding="20dp">
 
         <ImageView
             android:id="@+id/backButton"
             android:layout_width="30dp"
             android:layout_height="30dp"
-            android:src="@drawable/ic_back_arrow"
             android:layout_gravity="start"
-            android:layout_marginTop="10dp"/>
+            android:layout_marginTop="10dp"
+            android:src="@drawable/ic_back_arrow" />
 
         <EditText
             android:id="@+id/firstNameEditText"
             android:layout_width="match_parent"
             android:layout_height="60dp"
+            android:layout_marginTop="30dp"
+            android:background="@drawable/edittext_bg"
             android:hint="Imię"
-            android:textColorHint="#A9A9A9"
             android:paddingStart="8dp"
             android:paddingEnd="8dp"
-            android:background="@drawable/edittext_bg"
             android:textColor="#007acc"
-            android:layout_marginTop="30dp"/>
+            android:textColorHint="#A9A9A9" />
 
         <EditText
             android:id="@+id/lastNameEditText"
             android:layout_width="match_parent"
             android:layout_height="60dp"
-            android:hint="Nazwisko"
+            android:layout_marginTop="8dp"
             android:background="@drawable/edittext_bg"
-            android:textColorHint="#A9A9A9"
+            android:hint="Nazwisko"
             android:paddingStart="8dp"
             android:paddingEnd="8dp"
             android:textColor="#007acc"
-            android:layout_marginTop="8dp"/>
+            android:textColorHint="#A9A9A9" />
 
         <EditText
             android:id="@+id/emailEditText"
             android:layout_width="match_parent"
             android:layout_height="60dp"
-            android:hint="Adres e-mail"
+            android:layout_marginTop="8dp"
             android:background="@drawable/edittext_bg"
-            android:textColorHint="#A9A9A9"
+            android:hint="Adres e-mail"
             android:inputType="textEmailAddress"
             android:paddingStart="8dp"
             android:paddingEnd="8dp"
             android:textColor="#007acc"
-            android:layout_marginTop="8dp"/>
+            android:textColorHint="#A9A9A9" />
 
         <EditText
             android:id="@+id/birthDateEditText"
             android:layout_width="match_parent"
             android:layout_height="60dp"
-            android:hint="Data urodzenia"
+            android:layout_marginTop="8dp"
             android:background="@drawable/edittext_bg"
-            android:textColorHint="#A9A9A9"
+            android:hint="Data urodzenia"
+            android:inputType="date"
             android:paddingStart="8dp"
             android:paddingEnd="8dp"
-            android:inputType="date"
             android:textColor="#007acc"
-            android:layout_marginTop="8dp"/>
+            android:textColorHint="#A9A9A9" />
 
         <Button
             android:id="@+id/submitButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Wyślij"
-            android:backgroundTint="#007acc"
-            android:textColor="#FFFFFF"
             android:layout_marginTop="16dp"
-            android:background="@drawable/rounded_button"/>
+            android:background="@drawable/rounded_button"
+            android:backgroundTint="#007acc"
+            android:text="Wyślij"
+            android:textColor="#FFFFFF" />
 
         <ImageView
             android:id="@+id/appLogoImageView"
             android:layout_width="330dp"
             android:layout_height="265dp"
-            android:src="@drawable/app_logo"
             android:layout_gravity="center"
-            android:layout_marginTop="30dp"/>
+            android:layout_marginTop="30dp"
+            android:src="@drawable/app_logo" />
     </LinearLayout>
-</ScrollView>
+</LinearLayout>
