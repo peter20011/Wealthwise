@@ -4,6 +4,6 @@
     <solid android:color="@android:color/transparent" /> <!-- Transparentne tło -->
     <stroke
         android:width="4dp"
-        android:color="#CCCCCC" /> <!-- Kolor obramowania (szary) -->
-    <corners android:radius="2dp" /> <!-- Zaokrąglenia narożników -->
+        android:color="#007acc" />
+    <corners android:radius="0.000001sp" /> <!-- Zaokrąglenia narożników -->
 </shape>

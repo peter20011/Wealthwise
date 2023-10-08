@@ -1,10 +1,13 @@
 package com.example.wealthwise
 
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.text.InputType
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -24,6 +27,7 @@ class DashboardActivity : AppCompatActivity() {
     private lateinit var pieChart: PieChart
     private lateinit var expensesListView: ListView
     private lateinit var welcomeText: TextView
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -46,6 +50,7 @@ class DashboardActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
+
         // Ustawienie tekstu powitania
         val username = "John"
         welcomeText.text = "Witaj, $username"
@@ -58,7 +63,7 @@ class DashboardActivity : AppCompatActivity() {
 
             val input = EditText(this)
             input.inputType = InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_DECIMAL
-            input.setBackgroundResource(R.drawable.gray_border) // Dodaj obramowanie
+            input.setBackgroundResource(R.drawable.blue_border) // Dodaj obramowanie
             input.setTextColor(resources.getColor(android.R.color.black))
             builder.setView(input)
 
@@ -103,7 +108,7 @@ class DashboardActivity : AppCompatActivity() {
 
                     val input = EditText(this)
                     input.inputType = InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_DECIMAL
-                    input.setBackgroundResource(R.drawable.gray_border) // Dodaj obramowanie
+                    input.setBackgroundResource(R.drawable.blue_border) // Dodaj obramowanie
                     input.setTextColor(resources.getColor(android.R.color.black))
                     amountDialog.setView(input)
 
@@ -128,7 +133,7 @@ class DashboardActivity : AppCompatActivity() {
 
 
         val entries = ArrayList<PieEntry>()
-        val dataSet = PieDataSet(entries, "Rozkład towich wydatków")
+        val dataSet = PieDataSet(entries, "Twoje ostatnie wydatki")
         entries.add(PieEntry(30f, "Żywność"))
         entries.add(PieEntry(20f, "Chemia gospodarcza"))
         entries.add(PieEntry(10f, "Inne wydatki"))
@@ -143,6 +148,8 @@ class DashboardActivity : AppCompatActivity() {
         dataSet.colors.add(resources.getColor(R.color.purple_500))
         dataSet.colors.add(resources.getColor(R.color.purple_700))
 
+        dataSet.valueTextSize=18f
+
         val data = PieData(dataSet)
         pieChart.data = data
         pieChart.description.isEnabled = false
@@ -155,14 +162,46 @@ class DashboardActivity : AppCompatActivity() {
         pieChart.animateY(1000)
 
         // Przykładowe dane dla listy wydatków
-        val expenses = ArrayList<String>()
-        expenses.add("Wydatek 1")
-        expenses.add("Wydatek 2")
-        expenses.add("Wydatek 3")
-        expenses.add("Wydatek 4")
-        expenses.add("Wydatek 5")
+        val expensesList = arrayListOf(
+            Expense(50.0f, "Żywność"),
+            Expense(30.0f, "Chemia gospodarcza"),
+            Expense(20.0f, "Inne wydatki"),
+            Expense(40.0f, "Rachunki"),
+            Expense(60.0f, "Ubranie")
+        )
 
-        val adapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, expenses)
-        expensesListView.adapter = adapter
+        val expenseAdapter = ExpenseAdapter(this, expensesList)
+        expensesListView.adapter = expenseAdapter
+
+
+    }
+}
+
+data class Expense(val amount: Float, val category: String)
+
+class ExpenseAdapter(private val context: Context, private val expenses: List<Expense>) : BaseAdapter() {
+    override fun getCount(): Int {
+        return expenses.size
+    }
+
+    override fun getItem(position: Int): Any {
+        return expenses[position]
+    }
+
+    override fun getItemId(position: Int): Long {
+        return position.toLong()
+    }
+
+    override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
+        val view = convertView ?: LayoutInflater.from(context).inflate(R.layout.expense_list_item, parent, false)
+
+        val expense = expenses[position]
+        val amountTextView = view.findViewById<TextView>(R.id.amountTextView)
+        val categoryTextView = view.findViewById<TextView>(R.id.categoryTextView)
+
+        amountTextView.text = expense.amount.toString()
+        categoryTextView.text = expense.category
+
+        return view
     }
 }

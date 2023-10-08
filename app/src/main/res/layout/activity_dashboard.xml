@@ -1,169 +1,172 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<ScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:padding="16dp"
-    android:background="#FFFFFF">
+    android:layout_height="match_parent">
 
-    <!-- Przycisk Wylogowania i tekst "Witaj [imię użytkownika]" -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center_vertical">
+        android:orientation="vertical"
+        android:padding="16dp"
+        android:background="#FFFFFF">
 
-        <Button
-            android:id="@+id/logoutButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textColor="#FFFFFF"
-            android:backgroundTint="#a3acbd"
-            android:text="Wyloguj się"
-            android:layout_marginStart="10dp"
-            android:gravity="center"
-            android:layout_centerVertical="true" />
-
-        <TextView
-            android:id="@+id/welcomeText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text=""
-            android:textSize="18sp"
-            android:textColor="#000000"
-            android:layout_marginEnd="10dp"
-            android:gravity="end"
-            android:layout_centerVertical="true" />
-    </LinearLayout>
-
-    <!-- Pasek Nawigacyjny (Bottom Navigation Bar) -->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center">
-
-        <ImageView
-            android:id="@+id/homeIcon"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/home_icon"
-            android:layout_weight="1"
-            android:clickable="true"
-            android:onClick="navigateToHome" />
-
-        <ImageView
-            android:id="@+id/statisticIcon"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/statistic_icon"
-            android:layout_weight="1"
-            android:clickable="true"
-            android:onClick="navigateToStatistic" />
-
-        <ImageView
-            android:id="@+id/profileIcon"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/profile_icon"
-            android:layout_weight="1"
-            android:clickable="true"
-            android:onClick="navigateToProfile" />
-
-        <ImageView
-            android:id="@+id/assetsIcon"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/assets_icon"
-            android:layout_weight="1"
-            android:clickable="true"
-            android:onClick="navigateToAssets" />
-    </LinearLayout>
-
-    <!-- Przyciski "Dochód" i "Expense" z odstępem między nimi -->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_marginTop="16dp">
-
-        <Button
-            android:id="@+id/incomeButton"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Dochód"
-            android:background="@drawable/rounded_button"
-            android:textColor="#FFFFFF"
-            android:onClick="showIncomeField" />
-
-        <Button
-            android:id="@+id/expenseButton"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Expense"
-            android:background="@drawable/rounded_button"
-            android:textColor="#FFFFFF"
-            android:backgroundTint="#a3acbd"
-            android:onClick="showExpenseField"
-            android:layout_marginStart="8dp" />
-    </LinearLayout>
-
-    <!-- Pole tekstowe dla dochodu -->
-    <EditText
-        android:id="@+id/incomeEditText"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Podaj dochód"
-        android:layout_marginTop="8dp"
-        android:layout_marginLeft="3dp"
-        android:visibility="gone" />
-
-    <!-- Pole tekstowe dla wydatku i wybór kategorii -->
-    <EditText
-        android:id="@+id/expenseEditText"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Podaj wydatek"
-        android:layout_marginTop="8dp"
-        android:layout_marginLeft="3dp"
-        android:visibility="gone" />
-
-    <Spinner
-        android:id="@+id/categorySpinner"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:visibility="gone" />
-
-    <!-- Wykres kołowy z lekkim obramowaniem -->
-    <FrameLayout
-        android:layout_width="match_parent"
-        android:layout_height="450dp"
-        android:layout_marginTop="16dp"
-        >
-
-        <com.github.mikephil.charting.charts.PieChart
-            android:id="@+id/pieChart"
+        <!-- Przycisk Wylogowania i tekst "Witaj [imię użytkownika]" -->
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
 
-    </FrameLayout>
+            <Button
+                android:id="@+id/logoutButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="#FFFFFF"
+                android:backgroundTint="#a3acbd"
+                android:text="Wyloguj się"
+                android:layout_marginStart="10dp"
+                android:gravity="center"
+                android:layout_centerVertical="true" />
 
-    <!-- Miejsce na wyświetlanie ostatnich wydatków z lekkim obramowaniem -->
-    <FrameLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:background="@drawable/gray_border">
+            <TextView
+                android:id="@+id/welcomeText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text=""
+                android:textSize="18sp"
+                android:textColor="#000000"
+                android:layout_marginEnd="10dp"
+                android:gravity="end"
+                android:layout_centerVertical="true" />
+        </LinearLayout>
 
-        <ListView
-            android:id="@+id/expensesListView"
+        <!-- Pasek Nawigacyjny (Bottom Navigation Bar) -->
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center">
 
-    </FrameLayout>
-</LinearLayout>
+            <ImageView
+                android:id="@+id/homeIcon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/home_icon"
+                android:layout_weight="1"
+                android:clickable="true"
+                android:onClick="navigateToHome" />
+
+            <ImageView
+                android:id="@+id/statisticIcon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/statistic_icon"
+                android:layout_weight="1"
+                android:clickable="true"
+                android:onClick="navigateToStatistic" />
+
+            <ImageView
+                android:id="@+id/profileIcon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/profile_icon"
+                android:layout_weight="1"
+                android:clickable="true"
+                android:onClick="navigateToProfile" />
+
+            <ImageView
+                android:id="@+id/assetsIcon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/assets_icon"
+                android:layout_weight="1"
+                android:clickable="true"
+                android:onClick="navigateToAssets" />
+        </LinearLayout>
+
+        <!-- Przyciski "Dochód" i "Expense" z odstępem między nimi -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="16dp">
+
+            <Button
+                android:id="@+id/incomeButton"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Dochód"
+                android:background="@drawable/rounded_button"
+                android:textColor="#FFFFFF"
+                android:onClick="showIncomeField" />
+
+            <Button
+                android:id="@+id/expenseButton"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Expense"
+                android:background="@drawable/rounded_button"
+                android:textColor="#FFFFFF"
+                android:backgroundTint="#a3acbd"
+                android:onClick="showExpenseField"
+                android:layout_marginStart="8dp" />
+        </LinearLayout>
+
+        <!-- Pole tekstowe dla dochodu -->
+        <EditText
+            android:id="@+id/incomeEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Podaj dochód"
+            android:layout_marginTop="8dp"
+            android:layout_marginLeft="3dp"
+            android:visibility="gone" />
+
+        <!-- Pole tekstowe dla wydatku i wybór kategorii -->
+        <EditText
+            android:id="@+id/expenseEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Podaj wydatek"
+            android:layout_marginTop="8dp"
+            android:layout_marginLeft="3dp"
+            android:visibility="gone" />
+
+        <Spinner
+            android:id="@+id/categorySpinner"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:visibility="gone" />
+
+        <!-- Wykres kołowy z lekkim obramowaniem -->
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="480dp"
+            android:layout_marginTop="16dp"
+            >
+
+            <com.github.mikephil.charting.charts.PieChart
+                android:id="@+id/pieChart"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+
+        </FrameLayout>
+        <!-- Miejsce na wyświetlanie ostatnich wydatków z lekkim obramowaniem -->
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp">
+
+            <ListView
+                android:id="@+id/expensesListView"
+                android:layout_width="match_parent"
+                android:layout_height="238dp"
+                android:divider="@color/black" />
+        </FrameLayout>
+    </LinearLayout>
+</ScrollView>
