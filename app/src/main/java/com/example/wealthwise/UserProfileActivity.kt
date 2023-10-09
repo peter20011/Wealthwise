@@ -9,6 +9,7 @@ import android.view.View
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 
@@ -57,32 +58,53 @@ class UserProfileActivity : AppCompatActivity() {
             val intent = Intent(this, DashboardActivity::class.java)
             startActivity(intent)
         }
-
-
     }
 
-    // Metoda do wyświetlenia okna dialogowego do resetowania hasła
+    // Metoda do wyświetlenia dwuetapowego okna dialogowego do resetowania hasła
     private fun showResetPasswordDialog() {
-        val builder = AlertDialog.Builder(this)
-        builder.setTitle("Zresetuj hasło")
+        val builder = AlertDialog.Builder(this,R.style.AlertDialogTheme)
+        builder.setTitle("Podaj obecne hasło")
 
         val currentPasswordInput = EditText(this)
         currentPasswordInput.hint = "Obecne hasło"
         currentPasswordInput.inputType = InputType.TYPE_TEXT_VARIATION_PASSWORD
+        currentPasswordInput.setBackgroundResource(R.drawable.blue_border)
+        currentPasswordInput.setTextColor(resources.getColor(android.R.color.black))
         builder.setView(currentPasswordInput)
 
-        val newPasswordInput = EditText(this)
-        newPasswordInput.hint = "Nowe hasło"
-        newPasswordInput.inputType = InputType.TYPE_TEXT_VARIATION_PASSWORD
-        builder.setView(newPasswordInput)
+        builder.setPositiveButton("Dalej") { _, _ ->
+            val newPasswordInput = EditText(this)
+            newPasswordInput.hint = "Podaj nowe haslo"
+            newPasswordInput.inputType = InputType.TYPE_TEXT_VARIATION_PASSWORD
+            newPasswordInput.setBackgroundResource(R.drawable.blue_border) // Dodaj obramowanie
+            newPasswordInput.setTextColor(resources.getColor(android.R.color.black))
 
-        builder.setPositiveButton("Zmień") { _, _ ->
-            val currentPassword = currentPasswordInput.text.toString()
-            val newPassword = newPasswordInput.text.toString()
+            val newPasswordLayout = LinearLayout(this)
+            newPasswordLayout.orientation = LinearLayout.VERTICAL
+            newPasswordLayout.addView(newPasswordInput)
 
-            // Tutaj możesz dodać logikę do zmiany hasła na serwerze lub w lokalnym składowisku
-            // Upewnij się, że nowe hasło spełnia wymagania bezpieczeństwa
-            Toast.makeText(this, "Hasło zostało zmienione", Toast.LENGTH_SHORT).show()
+
+            val newPasswordBuilder = AlertDialog.Builder(this,R.style.AlertDialogTheme)
+            newPasswordBuilder.setTitle("Nowe hasło")
+            newPasswordBuilder.setView(newPasswordLayout)
+
+            newPasswordBuilder.setPositiveButton("Zmień") { _, _ ->
+                val currentPassword = currentPasswordInput.text.toString()
+                val newPassword = newPasswordInput.text.toString()
+
+                // Tutaj można dodać logikę do zmiany hasła na serwerze lub w lokalnym składowisku
+                if (currentPassword.isNotEmpty() && newPassword.isNotEmpty()) {
+                    Toast.makeText(this, "Hasło zostało zmienione", Toast.LENGTH_SHORT).show()
+                } else {
+                    Toast.makeText(this, "Błąd podczas zmiany hasła. Sprawdź dane i spróbuj ponownie.", Toast.LENGTH_SHORT).show()
+                }
+            }
+
+            newPasswordBuilder.setNegativeButton("Anuluj") { dialog, _ ->
+                dialog.cancel()
+            }
+
+            newPasswordBuilder.show()
         }
 
         builder.setNegativeButton("Anuluj") { dialog, _ ->

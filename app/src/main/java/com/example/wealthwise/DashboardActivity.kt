@@ -124,7 +124,6 @@ class DashboardActivity : AppCompatActivity() {
                     input.setBackgroundResource(R.drawable.blue_border) // Dodaj obramowanie
                     input.setTextColor(resources.getColor(android.R.color.black))
                     amountDialog.setView(input)
-
                     amountDialog.setPositiveButton("OK") { _, _ ->
                         val selectedAmount = input.text.toString().toFloat()
                         // Tutaj można dodać kod do obsługi wyboru kategorii i wprowadzonej kwoty
