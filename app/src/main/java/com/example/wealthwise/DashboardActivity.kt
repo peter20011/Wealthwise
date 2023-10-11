@@ -64,6 +64,11 @@ class DashboardActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
+        statisticIcon.setOnClickListener{
+            val intent=Intent(this,StatisticActivity::class.java)
+            startActivity(intent)
+        }
+
         // Ustawienie tekstu powitania
         val username = "John"
         welcomeText.text = "Witaj, $username"

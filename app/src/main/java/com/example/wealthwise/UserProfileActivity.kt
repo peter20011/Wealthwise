@@ -32,7 +32,7 @@ class UserProfileActivity : AppCompatActivity() {
         birthDateTextView = findViewById(R.id.birthDateTextView)
         resetPasswordButton = findViewById(R.id.resetPasswordButton)
 
-        // Ustawienie informacji o użytkowniku (możesz pobrać te dane z serwera lub SharedPreferences)
+        // Ustawienie informacji o użytkowniku (można pobrać te dane z serwera lub SharedPreferences)
         firstNameTextView.text = "Imię: John"
         lastNameTextView.text = "Nazwisko: Doe"
         emailTextView.text = "Email: johndoe@example.com"
@@ -56,6 +56,11 @@ class UserProfileActivity : AppCompatActivity() {
 
         homeIcon.setOnClickListener {
             val intent = Intent(this, DashboardActivity::class.java)
+            startActivity(intent)
+        }
+
+        statisticIcon.setOnClickListener{
+            val intent=Intent(this,StatisticActivity::class.java)
             startActivity(intent)
         }
     }

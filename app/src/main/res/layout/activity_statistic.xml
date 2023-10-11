@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp"
+        android:background="#FFFFFF">
+
+
+
+        <!-- Pasek Nawigacyjny (Bottom Navigation Bar) -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:layout_marginTop="10dp">
+
+            <ImageView
+                android:id="@+id/homeIcon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/home_icon"
+                android:layout_weight="1"
+                android:clickable="true"
+                android:background="@drawable/blue_border"
+                android:onClick="navigateToHome" />
+
+            <ImageView
+                android:id="@+id/statisticIcon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/statistic_icon"
+                android:layout_weight="1"
+                android:clickable="true"
+                android:background="@drawable/blue_border"
+                android:onClick="navigateToStatistic" />
+
+            <ImageView
+                android:id="@+id/profileIcon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/profile_icon"
+                android:layout_weight="1"
+                android:clickable="true"
+                android:background="@drawable/blue_border"
+                android:onClick="navigateToProfile" />
+
+            <ImageView
+                android:id="@+id/assetsIcon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/assets_icon"
+                android:layout_weight="1"
+                android:clickable="true"
+                android:background="@drawable/blue_border"
+                android:onClick="navigateToAssets" />
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="Wydatki oraz dochody miesięczne"
+            android:gravity="center"
+            android:textColor="@color/black"
+            android:textSize="20dp">
+        </TextView>
+
+        <!-- Wykresy dla poszczególnych miesięcy -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginTop="12dp">
+
+            <!-- Wykres dla stycznia -->
+            <com.github.mikephil.charting.charts.BarChart
+                android:id="@+id/chartJanuary"
+                android:layout_width="match_parent"
+                android:layout_height="280dp"/>
+
+            <!-- Wykres dla lutego -->
+            <com.github.mikephil.charting.charts.BarChart
+                android:id="@+id/chartFebruary"
+                android:layout_width="match_parent"
+                android:layout_height="280dp"
+                android:layout_marginTop="12dp"/>
+
+            <com.github.mikephil.charting.charts.BarChart
+                android:id="@+id/chartMarch"
+                android:layout_width="match_parent"
+                android:layout_height="280dp"
+                android:layout_marginTop="12dp"/>
+
+            <com.github.mikephil.charting.charts.BarChart
+                android:id="@+id/chartApril"
+                android:layout_width="match_parent"
+                android:layout_height="280dp"
+                android:layout_marginTop="12dp"/>
+
+            <com.github.mikephil.charting.charts.BarChart
+                android:id="@+id/chartMay"
+                android:layout_width="match_parent"
+                android:layout_height="280dp"
+                android:layout_marginTop="12dp"/>
+
+            <com.github.mikephil.charting.charts.BarChart
+                android:id="@+id/chartJune"
+                android:layout_width="match_parent"
+                android:layout_height="280dp"
+                android:layout_marginTop="12dp"/>
+
+            <com.github.mikephil.charting.charts.BarChart
+                android:id="@+id/chartJuly"
+                android:layout_width="match_parent"
+                android:layout_height="280dp"
+                android:layout_marginTop="12dp"/>
+
+            <com.github.mikephil.charting.charts.BarChart
+                android:id="@+id/chartAugust"
+                android:layout_width="match_parent"
+                android:layout_height="280dp"
+                android:layout_marginTop="12dp"/>
+
+            <com.github.mikephil.charting.charts.BarChart
+                android:id="@+id/chartSeptember"
+                android:layout_width="match_parent"
+                android:layout_height="280dp"
+                android:layout_marginTop="12dp"/>
+
+            <com.github.mikephil.charting.charts.BarChart
+                android:id="@+id/chartOctober"
+                android:layout_width="match_parent"
+                android:layout_height="280dp"
+                android:layout_marginTop="12dp"/>
+
+            <com.github.mikephil.charting.charts.BarChart
+                android:id="@+id/chartNovember"
+                android:layout_width="match_parent"
+                android:layout_height="280dp"
+                android:layout_marginTop="12dp"/>
+
+            <com.github.mikephil.charting.charts.BarChart
+                android:id="@+id/chartDecember"
+                android:layout_width="match_parent"
+                android:layout_height="280dp"
+                android:layout_marginTop="12dp"/>
+
+        </LinearLayout>
+
+    </LinearLayout>
+</ScrollView>
