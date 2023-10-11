@@ -69,6 +69,11 @@ class DashboardActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
+        assetsIcon.setOnClickListener{
+            val intent=Intent(this,AssetsActivity::class.java)
+            startActivity(intent)
+        }
+
         // Ustawienie tekstu powitania
         val username = "John"
         welcomeText.text = "Witaj, $username"

@@ -39,6 +39,11 @@ class StatisticActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
+        assetsIcon.setOnClickListener{
+            val intent=Intent(this,AssetsActivity::class.java)
+            startActivity(intent)
+        }
+
         // Pobierz wykresy dla poszczególnych miesięcy
         val chartJanuary: BarChart = findViewById(R.id.chartJanuary)
         val chartFebruary: BarChart = findViewById(R.id.chartFebruary)

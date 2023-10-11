@@ -63,6 +63,11 @@ class UserProfileActivity : AppCompatActivity() {
             val intent=Intent(this,StatisticActivity::class.java)
             startActivity(intent)
         }
+
+        assetsIcon.setOnClickListener{
+            val intent=Intent(this,AssetsActivity::class.java)
+            startActivity(intent)
+        }
     }
 
     // Metoda do wyświetlenia dwuetapowego okna dialogowego do resetowania hasła

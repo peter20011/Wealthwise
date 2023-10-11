@@ -1,0 +1,248 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp"
+        android:background="#FFFFFF">
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:layout_marginTop="10dp">
+
+            <ImageView
+                android:id="@+id/homeIcon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/home_icon"
+                android:layout_weight="1"
+                android:clickable="true"
+                android:background="@drawable/blue_border"
+                android:onClick="navigateToHome" />
+
+            <ImageView
+                android:id="@+id/statisticIcon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/statistic_icon"
+                android:layout_weight="1"
+                android:clickable="true"
+                android:background="@drawable/blue_border"
+                android:onClick="navigateToStatistic" />
+
+            <ImageView
+                android:id="@+id/profileIcon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/profile_icon"
+                android:layout_weight="1"
+                android:clickable="true"
+                android:background="@drawable/blue_border"
+                android:onClick="navigateToProfile" />
+
+            <ImageView
+                android:id="@+id/assetsIcon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/assets_icon"
+                android:layout_weight="1"
+                android:clickable="true"
+                android:background="@drawable/blue_border"
+                android:onClick="navigateToAssets" />
+        </LinearLayout>
+
+
+        <!-- Miejsce dla kursu waluty 1 -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:layout_marginTop="16dp"
+            >
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/dolar"
+                android:layout_marginEnd="16dp" />
+
+            <TextView
+                android:id="@+id/currency1Name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="USD"
+                android:textColor="@color/black"
+                android:textSize="18sp"
+                />
+
+            <TextView
+                android:id="@+id/currency1Rate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/black"
+                android:text=""
+                android:layout_marginLeft="5dp"
+                android:textSize="18sp" />
+        </LinearLayout>
+
+        <!-- Miejsce dla kursu waluty 2 -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:layout_marginTop="16dp">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/euro"
+                android:layout_marginEnd="16dp" />
+
+            <TextView
+                android:id="@+id/currency2Name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/black"
+                android:text="EUR"
+                android:textSize="18sp" />
+
+            <TextView
+                android:id="@+id/currency2Rate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/black"
+                android:text=""
+                android:layout_marginLeft="5dp"
+                android:textSize="18sp" />
+        </LinearLayout>
+
+        <!-- Miejsce dla kursu waluty 3 -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:layout_marginTop="16dp">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/swiss_franc"
+            android:layout_marginEnd="16dp" />
+
+            <TextView
+                android:id="@+id/currency3Name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/black"
+                android:text="CHF"
+                android:textSize="18sp" />
+
+            <TextView
+                android:id="@+id/currency3Rate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/black"
+                android:text=""
+                android:layout_marginLeft="5dp"
+            android:textSize="18sp" />
+        </LinearLayout>
+
+        <!-- Miejsce dla kursu waluty 4 -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:layout_marginTop="16dp">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/pound"
+                android:layout_marginEnd="16dp" />
+
+            <TextView
+                android:id="@+id/currency4Name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="GBP"
+                android:textColor="@color/black"
+                android:textSize="18sp" />
+
+            <TextView
+                android:id="@+id/currency4Rate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text=""
+                android:layout_marginLeft="5dp"
+                android:textColor="@color/black"
+                android:textSize="18sp" />
+        </LinearLayout>
+
+        <RadioGroup
+            android:id="@+id/assetTabs"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="16dp"
+            android:gravity="center">
+
+            <RadioButton
+                android:id="@+id/tabCurrency"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Waluty" />
+
+            <RadioButton
+                android:id="@+id/tabStocks"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Akcje" />
+
+            <RadioButton
+                android:id="@+id/tabBonds"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Obligacje" />
+
+            <RadioButton
+                android:id="@+id/tabDeposits"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Lokaty" />
+        </RadioGroup>
+
+        <Button
+            android:id="@+id/addAssetButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Dodaj Aktywo"
+            android:layout_marginTop="16dp"
+            android:textColor="#FFFFFF"
+            android:background="@drawable/rounded_button"/>
+
+        <!-- Miejsce dla aktywów (dynamicznie dodawane i usuwane) -->
+        <LinearLayout
+            android:id="@+id/assetsContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:layout_marginTop="16dp">
+            <!-- Tutaj będą dynamicznie dodawane aktywa -->
+        </LinearLayout>
+
+    </LinearLayout>
+</ScrollView>
+
