@@ -5,7 +5,7 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:orientation="vertical"
         android:padding="16dp"
         android:background="#FFFFFF">
@@ -202,25 +202,25 @@
                 android:id="@+id/tabCurrency"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:textColor="@color/black"
+                android:buttonTint="@color/lightblue"
                 android:text="Waluty" />
 
             <RadioButton
                 android:id="@+id/tabStocks"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:textColor="@color/black"
+                android:buttonTint="@color/lightblue"
                 android:text="Akcje" />
 
             <RadioButton
                 android:id="@+id/tabBonds"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:textColor="@color/black"
+                android:buttonTint="@color/lightblue"
                 android:text="Obligacje" />
-
-            <RadioButton
-                android:id="@+id/tabDeposits"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Lokaty" />
         </RadioGroup>
 
         <Button
@@ -230,16 +230,28 @@
             android:text="Dodaj Aktywo"
             android:layout_marginTop="16dp"
             android:textColor="#FFFFFF"
-            android:background="@drawable/rounded_button"/>
+            android:background="@drawable/rounded_button"
+            android:onClick="showAssetTypeDialog"/>
+
+        <Button
+            android:id="@+id/deleteAssetButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Usuń Aktywo"
+            android:layout_marginTop="16dp"
+            android:textColor="#FFFFFF"
+            android:background="@drawable/rounded_button"
+            android:onClick="deleteSelectedAssets"/>
 
         <!-- Miejsce dla aktywów (dynamicznie dodawane i usuwane) -->
         <LinearLayout
             android:id="@+id/assetsContainer"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:orientation="vertical"
             android:gravity="center"
             android:layout_marginTop="16dp">
+
             <!-- Tutaj będą dynamicznie dodawane aktywa -->
         </LinearLayout>
 
