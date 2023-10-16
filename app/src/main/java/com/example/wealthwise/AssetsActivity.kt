@@ -191,9 +191,17 @@ class AssetsActivity : AppCompatActivity() {
             // Handle the entered value
             val enteredValue = inputField.text.toString()
 
-            // Show an AlertDialog to inform about the currency and entered value
-            showCurrencyAndValueAlert(selectedCurrency, enteredValue)
-
+            if(enteredValue.isNotEmpty()){
+                val value=enteredValue.toDouble()
+                if(value > 0){
+                    // Show an AlertDialog to inform about the currency and entered value
+                    showCurrencyAndValueAlert(selectedCurrency, enteredValue)
+                }else{
+                    Toast.makeText(this, "Wartość musi być większa od zera", Toast.LENGTH_SHORT).show()
+                }
+            }else{
+                Toast.makeText(this, "Proszę wprowadzić wartość", Toast.LENGTH_SHORT).show()
+            }
         }
 
         valueBuilder.setNegativeButton("Anuluj") { dialog, _ ->
@@ -232,7 +240,17 @@ class AssetsActivity : AppCompatActivity() {
             val enteredValue = inputField.text.toString()
 
             // Show an AlertDialog to inform about the currency and entered value
-            showAssetAndValueAlert("Akcje", enteredValue)
+            if(enteredValue.isNotEmpty()){
+                val value = enteredValue.toDouble()
+                if(value > 0 ){
+                    showAssetAndValueAlert("Akcje", enteredValue)
+                }else{
+                    Toast.makeText(this, "Wartość musi być większa od zera", Toast.LENGTH_SHORT).show()
+                }
+            }else{
+                Toast.makeText(this, "Proszę wprowadzić wartość", Toast.LENGTH_SHORT).show()
+            }
+
         }
 
         sharesBuilder.setNegativeButton("Anuluj") { dialog, _ ->
@@ -256,8 +274,18 @@ class AssetsActivity : AppCompatActivity() {
             // Handle the entered value
             val enteredValue = inputField.text.toString()
 
-            // Show an AlertDialog to inform about the currency and entered value
-            showAssetAndValueAlert("Obligacje", enteredValue)
+            if(enteredValue.isNotEmpty()){
+                val value = enteredValue.toDouble();
+                if(value > 0 ){
+                    // Show an AlertDialog to inform about the currency and entered value
+                    showAssetAndValueAlert("Obligacje", enteredValue)
+                }else{
+                    Toast.makeText(this, "Wartość musi być większa od zera", Toast.LENGTH_SHORT).show()
+                }
+            }else{
+                Toast.makeText(this, "Proszę wprowadzić wartość", Toast.LENGTH_SHORT).show()
+            }
+
         }
 
         sharesBuilder.setNegativeButton("Anuluj") { dialog, _ ->

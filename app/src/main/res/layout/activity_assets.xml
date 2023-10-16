@@ -252,6 +252,17 @@
             android:gravity="center"
             android:layout_marginTop="16dp">
 
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Twoje obecne aktywa:"
+                android:textColor="@color/black"
+                android:gravity="center"
+                android:textSize="20sp"
+                android:padding="8dp"
+                android:layout_marginBottom="5dp">
+            </TextView>
+
             <!-- Tutaj będą dynamicznie dodawane aktywa -->
         </LinearLayout>
 
