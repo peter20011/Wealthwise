@@ -17,6 +17,7 @@
         <activity
             android:name=".MainActivity"
             android:exported="true"
+            android:label="@string/app_name"
             android:theme="@style/Theme.Wealthwise">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -26,29 +27,35 @@
         </activity>
         <activity
             android:name=".LoginActivity"
+            android:label="Login Activity"
             android:theme="@style/Theme.AppCompat">
 
             <!-- Ta aktywność może mieć dodatkowe deklaracje i filtry intencji, jeśli są potrzebne -->
         </activity>
         <activity
             android:name=".RegistrationActivity"
+            android:label="Registration Activity"
             android:theme="@style/Theme.AppCompat">
             <!-- Ta aktywność może mieć dodatkowe deklaracje i filtry intencji, jeśli są potrzebne -->
         </activity>
         <activity
             android:name=".DashboardActivity"
+            android:label="Dashboard Activity"
             android:theme="@style/Theme.AppCompat">
         </activity>
         <activity
             android:name=".UserProfileActivity"
+            android:label="User Profile Activity"
             android:theme="@style/Theme.AppCompat">
         </activity>
         <activity
             android:name=".StatisticActivity"
+            android:label="Statistic"
             android:theme="@style/Theme.AppCompat">
         </activity>
         <activity
             android:name=".AssetsActivity"
+            android:label="Assets"
             android:theme="@style/Theme.AppCompat">
         </activity>
     </application>

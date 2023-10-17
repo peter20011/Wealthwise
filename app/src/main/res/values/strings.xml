@@ -1,3 +1,13 @@
 <resources>
     <string name="app_name">Wealthwise</string>
+    <string-array name="categories">
+        <item>Żywność</item>
+        <item>Chemia gospodarcza</item>
+        <item>Inne wydatki</item>
+        <item>Rachunki</item>
+        <item>Ubranie</item>
+        <item>Relaks</item>
+        <item>Transport</item>
+        <item>Mieszkanie</item>
+    </string-array>
 </resources>

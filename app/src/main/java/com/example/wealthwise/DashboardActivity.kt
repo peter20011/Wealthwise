@@ -8,6 +8,7 @@ import android.text.InputType
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.AnimationUtils
 import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -27,6 +28,23 @@ class DashboardActivity : AppCompatActivity() {
     private lateinit var pieChart: PieChart
     private lateinit var expensesListView: ListView
     private lateinit var welcomeText: TextView
+    private val expensesList = arrayListOf(
+        Expense(50.0f, "Żywność","PLN"),
+        Expense(30.0f, "Chemia gospodarcza","PLN"),
+        Expense(20.0f, "Inne wydatki","PLN"),
+        Expense(40.0f, "Rachunki","PLN"),
+        Expense(60.0f, "Ubranie","PLN")
+    )
+    val categories = arrayOf(
+        "Żywność",
+        "Chemia gospodarcza",
+        "Inne wydatki",
+        "Rachunki",
+        "Ubranie",
+        "Relaks",
+        "Transport",
+        "Mieszkanie"
+    )
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -59,18 +77,18 @@ class DashboardActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
-        profileIcon.setOnClickListener{
-            val intent=Intent(this,UserProfileActivity::class.java)
+        profileIcon.setOnClickListener {
+            val intent = Intent(this, UserProfileActivity::class.java)
             startActivity(intent)
         }
 
-        statisticIcon.setOnClickListener{
-            val intent=Intent(this,StatisticActivity::class.java)
+        statisticIcon.setOnClickListener {
+            val intent = Intent(this, StatisticActivity::class.java)
             startActivity(intent)
         }
 
-        assetsIcon.setOnClickListener{
-            val intent=Intent(this,AssetsActivity::class.java)
+        assetsIcon.setOnClickListener {
+            val intent = Intent(this, AssetsActivity::class.java)
             startActivity(intent)
         }
 
@@ -104,16 +122,6 @@ class DashboardActivity : AppCompatActivity() {
         // Obsługa przycisku "Expense"
         expenseButton.setOnClickListener {
             // Wyświetl dymek z miejscem do wyboru kategorii
-            val categories = arrayOf(
-                "Żywność",
-                "Chemia gospodarcza",
-                "Inne wydatki",
-                "Rachunki",
-                "Ubranie",
-                "Relaks",
-                "Transport",
-                "Mieszkanie"
-            )
 
             val selectedCategory = arrayOf(-1) // Tablica do przechowywania wybranej kategorii
 
@@ -130,12 +138,17 @@ class DashboardActivity : AppCompatActivity() {
                     amountDialog.setTitle("Podaj kwotę wydatku")
 
                     val input = EditText(this)
-                    input.inputType = InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_DECIMAL
+                    input.inputType =
+                        InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_DECIMAL
                     input.setBackgroundResource(R.drawable.blue_border) // Dodaj obramowanie
                     input.setTextColor(resources.getColor(android.R.color.black))
                     amountDialog.setView(input)
                     amountDialog.setPositiveButton("OK") { _, _ ->
                         val selectedAmount = input.text.toString().toFloat()
+                        val selectedCategoryIndex = selectedCategory[0]
+                        if(selectedCategoryIndex != -1){
+                            addExpense(selectedCategoryIndex,selectedAmount)
+                        }
                         // Tutaj można dodać kod do obsługi wyboru kategorii i wprowadzonej kwoty
                         // np. zaktualizować wykres lub listę
                     }
@@ -143,7 +156,8 @@ class DashboardActivity : AppCompatActivity() {
                     amountDialog.setNegativeButton("Anuluj") { dialog, _ -> dialog.cancel() }
                     amountDialog.show()
                 } else {
-                    Toast.makeText(this, "Proszę wybrać kategorię wydatku", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, "Proszę wybrać kategorię wydatku", Toast.LENGTH_SHORT)
+                        .show()
                 }
             }
 
@@ -153,7 +167,7 @@ class DashboardActivity : AppCompatActivity() {
 
         // Przykładowe dane dla wykresu kołowego
         val entries = ArrayList<PieEntry>()
-        val dataSet = PieDataSet(entries, "Twoje ostatnie wydatki")
+        val dataSet = PieDataSet(entries, "")
         entries.add(PieEntry(30f, "Żywność"))
         entries.add(PieEntry(20f, "Chemia gospodarcza"))
         entries.add(PieEntry(10f, "Inne wydatki"))
@@ -181,44 +195,61 @@ class DashboardActivity : AppCompatActivity() {
         pieChart.animateY(1000)
 
         // Przykładowe dane dla listy wydatków
-        val expensesList = arrayListOf(
-            Expense(50.0f, "Żywność"),
-            Expense(30.0f, "Chemia gospodarcza"),
-            Expense(20.0f, "Inne wydatki"),
-            Expense(40.0f, "Rachunki"),
-            Expense(60.0f, "Ubranie")
-        )
+
 
         val expenseAdapter = ExpenseAdapter(this, expensesList)
         expensesListView.adapter = expenseAdapter
     }
-}
 
-data class Expense(val amount: Float, val category: String)
+    private fun addExpense(category: Int, amount: Float) {
+        if (category != -1) {
+            // Dodaj nowy wydatek na początku listy
+            val selectedCategory = resources.getStringArray(R.array.categories)[category]
+            expensesList.add(0, Expense(amount, selectedCategory,"PLN"))
 
-class ExpenseAdapter(private val context: Context, private val expenses: List<Expense>) : BaseAdapter() {
-    override fun getCount(): Int {
-        return expenses.size
+            // Uaktualnij widok listy z animacją tylko w przypadku nowego elementu
+            if (expensesList.size == 1) {
+                val animation = AnimationUtils.loadAnimation(this, R.anim.slide_down)
+                expensesListView.startAnimation(animation)
+            }
+
+            // Aktualizacja widoku listy
+            (expensesListView.adapter as ExpenseAdapter).notifyDataSetChanged()
+
+            // Usuń ostatni element z listy (jeśli jest więcej niż 5 elementów)
+            if (expensesList.size > 5) {
+                expensesList.removeAt(expensesList.size - 1)
+            }
+        }
     }
+    data class Expense(val amount: Float, val category: String, val value : String)
 
-    override fun getItem(position: Int): Any {
-        return expenses[position]
-    }
+    class ExpenseAdapter(private val context: Context, private val expenses: List<Expense>) :
+        BaseAdapter() {
+        override fun getCount(): Int {
+            return expenses.size
+        }
 
-    override fun getItemId(position: Int): Long {
-        return position.toLong()
-    }
+        override fun getItem(position: Int): Any {
+            return expenses[position]
+        }
 
-    override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
-        val view = convertView ?: LayoutInflater.from(context).inflate(R.layout.expense_list_item, parent, false)
+        override fun getItemId(position: Int): Long {
+            return position.toLong()
+        }
 
-        val expense = expenses[position]
-        val amountTextView = view.findViewById<TextView>(R.id.amountTextView)
-        val categoryTextView = view.findViewById<TextView>(R.id.categoryTextView)
+        override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
+            val view = convertView ?: LayoutInflater.from(context)
+                .inflate(R.layout.expense_list_item, parent, false)
 
-        amountTextView.text = expense.amount.toString()
-        categoryTextView.text = expense.category
-
-        return view
+            val expense = expenses[position]
+            val amountTextView = view.findViewById<TextView>(R.id.amountTextView)
+            val categoryTextView = view.findViewById<TextView>(R.id.categoryTextView)
+            val valueTextView = view.findViewById<TextView>(R.id.valueTextView)
+            amountTextView.text = expense.amount.toString()
+            categoryTextView.text = expense.category
+            valueTextView.text=expense.value
+            return view
+        }
     }
 }

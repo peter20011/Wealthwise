@@ -159,17 +159,26 @@
                 android:layout_height="match_parent" />
 
         </FrameLayout>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="Twoje ostatnie wydatki:"
+            android:textColor="@color/lightblue"
+            android:padding="3dp"
+            android:textSize="22sp">
+        </TextView>
         <!-- Miejsce na wyświetlanie ostatnich wydatków z lekkim obramowaniem -->
         <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:background="@drawable/blue_border">
+            android:layout_marginTop="10dp">
 
             <ListView
                 android:id="@+id/expensesListView"
                 android:layout_width="match_parent"
-                android:layout_height="238dp"
+                android:layout_height="255dp"
                 android:divider="@color/black" />
         </FrameLayout>
     </LinearLayout>
