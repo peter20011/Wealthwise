@@ -25,6 +25,7 @@ class AssetsActivity : AppCompatActivity() {
     private lateinit var currency3Rate: TextView
     private lateinit var currency4Rate: TextView
     private var selectedCurrency: String? = null
+    private lateinit var assetsContainer : LinearLayout
     private val selectedAssets = mutableListOf<View>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -66,6 +67,8 @@ class AssetsActivity : AppCompatActivity() {
         currency2Rate = findViewById(R.id.currency2Rate)
         currency3Rate = findViewById(R.id.currency3Rate)
         currency4Rate = findViewById(R.id.currency4Rate)
+        assetsContainer =  findViewById(R.id.assetsContainer)
+        assetsContainer.visibility = View.GONE
 
         // Pobieranie kursów walut
         fetchCurrencyRates()
@@ -195,6 +198,7 @@ class AssetsActivity : AppCompatActivity() {
                 val value=enteredValue.toDouble()
                 if(value > 0){
                     // Show an AlertDialog to inform about the currency and entered value
+                    assetsContainer.visibility = View.VISIBLE
                     showCurrencyAndValueAlert(selectedCurrency, enteredValue)
                 }else{
                     Toast.makeText(this, "Wartość musi być większa od zera", Toast.LENGTH_SHORT).show()
@@ -300,6 +304,7 @@ class AssetsActivity : AppCompatActivity() {
         alertBuilder.setMessage("Aktywo: $asset\nWaluta: PLN \nWartość: $value")
         alertBuilder.setPositiveButton("OK") { dialog, _ ->
             // Handle the OK button click if needed
+            assetsContainer.visibility = View.VISIBLE
             addAssetToContainerWithAnimation("PLN",value,asset)
             dialog.dismiss()
         }

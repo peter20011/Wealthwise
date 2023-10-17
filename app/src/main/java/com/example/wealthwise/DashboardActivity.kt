@@ -17,6 +17,7 @@ import com.github.mikephil.charting.components.Legend
 import com.github.mikephil.charting.data.PieData
 import com.github.mikephil.charting.data.PieDataSet
 import com.github.mikephil.charting.data.PieEntry
+import org.w3c.dom.Text
 
 class DashboardActivity : AppCompatActivity() {
 
@@ -28,13 +29,11 @@ class DashboardActivity : AppCompatActivity() {
     private lateinit var pieChart: PieChart
     private lateinit var expensesListView: ListView
     private lateinit var welcomeText: TextView
-    private val expensesList = arrayListOf(
-        Expense(50.0f, "Żywność","PLN"),
-        Expense(30.0f, "Chemia gospodarcza","PLN"),
-        Expense(20.0f, "Inne wydatki","PLN"),
-        Expense(40.0f, "Rachunki","PLN"),
-        Expense(60.0f, "Ubranie","PLN")
-    )
+    private lateinit var lackOfData : TextView
+    private lateinit var lastSpendVisibility : TextView
+    private lateinit var lastSpendVisibilityFrame : ListView
+    private var totalIncome = 0.0
+    private val expensesList = arrayListOf<Expense>()
     val categories = arrayOf(
         "Żywność",
         "Chemia gospodarcza",
@@ -59,6 +58,9 @@ class DashboardActivity : AppCompatActivity() {
         pieChart = findViewById(R.id.pieChart)
         expensesListView = findViewById(R.id.expensesListView)
         welcomeText = findViewById(R.id.welcomeText)
+        lackOfData = findViewById(R.id.lackOfData)
+        lastSpendVisibility = findViewById(R.id.lastSpend)
+        lastSpendVisibilityFrame = findViewById(R.id.expensesListView)
 
         val homeIcon = findViewById<ImageView>(R.id.homeIcon)
         val statisticIcon = findViewById<ImageView>(R.id.statisticIcon)
@@ -96,6 +98,18 @@ class DashboardActivity : AppCompatActivity() {
         val username = "John"
         welcomeText.text = "Witaj, $username"
 
+        if(expensesList.isEmpty()){
+            lastSpendVisibility.visibility = View.GONE
+            lastSpendVisibilityFrame.visibility = View.GONE
+        }
+
+        if(totalIncome == 0.0){
+            expenseButton.visibility = View.GONE
+            pieChart.visibility = View.GONE
+            categorySpinner.visibility = View.GONE
+            lackOfData.visibility = View.VISIBLE
+        }
+
         // Obsługa przycisku "Dochód"
         incomeButton.setOnClickListener {
             // Wyświetl dymek z miejscem do wprowadzenia dochodu
@@ -109,9 +123,20 @@ class DashboardActivity : AppCompatActivity() {
             builder.setView(input)
 
             builder.setPositiveButton("OK") { dialog, _ ->
-                val income = input.text.toString().toFloat()
-                // Tutaj można dodać kod do obsługi wprowadzonego dochodu
-                // np. zaktualizować wykres lub listę
+                val income = input.text.toString()
+                if(income.isNotEmpty() && income.toDouble() != 0.00){
+                    // Tutaj można dodać kod do obsługi wprowadzonego dochodu
+                    // np. zaktualizować wykres lub listę
+                    totalIncome=income.toDouble()
+                    expenseButton.visibility = View.VISIBLE
+                    pieChart.visibility = View.VISIBLE
+                    categorySpinner.visibility = View.VISIBLE
+                    lackOfData.visibility= View.GONE
+                    setUpDiagram()
+                }else{
+                    Toast.makeText(this, "Wprowadź poprawną wartość dochodu (niezerową).", Toast.LENGTH_SHORT).show()
+                }
+
                 dialog.dismiss()
             }
 
@@ -138,26 +163,30 @@ class DashboardActivity : AppCompatActivity() {
                     amountDialog.setTitle("Podaj kwotę wydatku")
 
                     val input = EditText(this)
-                    input.inputType =
-                        InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_DECIMAL
+                    input.inputType = InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_DECIMAL
                     input.setBackgroundResource(R.drawable.blue_border) // Dodaj obramowanie
                     input.setTextColor(resources.getColor(android.R.color.black))
                     amountDialog.setView(input)
+
                     amountDialog.setPositiveButton("OK") { _, _ ->
-                        val selectedAmount = input.text.toString().toFloat()
-                        val selectedCategoryIndex = selectedCategory[0]
-                        if(selectedCategoryIndex != -1){
-                            addExpense(selectedCategoryIndex,selectedAmount)
+                        val enteredAmount = input.text.toString().trim()
+                        if(enteredAmount.isNotEmpty() && enteredAmount.toDouble() != 0.00){
+                            val selectedCategoryIndex = selectedCategory[0]
+                            if(selectedCategoryIndex != -1){
+                                lastSpendVisibility.visibility = View.VISIBLE
+                                lastSpendVisibilityFrame.visibility = View.VISIBLE
+                                addExpense(selectedCategoryIndex,enteredAmount.toFloat())
+                            }
+                        }else{
+                            Toast.makeText(this, "Wprowadź poprawną wartość wydatku (nie zerową).", Toast.LENGTH_SHORT).show()
                         }
-                        // Tutaj można dodać kod do obsługi wyboru kategorii i wprowadzonej kwoty
-                        // np. zaktualizować wykres lub listę
+
                     }
 
                     amountDialog.setNegativeButton("Anuluj") { dialog, _ -> dialog.cancel() }
                     amountDialog.show()
                 } else {
-                    Toast.makeText(this, "Proszę wybrać kategorię wydatku", Toast.LENGTH_SHORT)
-                        .show()
+                    Toast.makeText(this, "Proszę wybrać kategorię wydatku", Toast.LENGTH_SHORT).show()
                 }
             }
 
@@ -165,40 +194,7 @@ class DashboardActivity : AppCompatActivity() {
             categoryDialog.show()
         }
 
-        // Przykładowe dane dla wykresu kołowego
-        val entries = ArrayList<PieEntry>()
-        val dataSet = PieDataSet(entries, "")
-        entries.add(PieEntry(30f, "Żywność"))
-        entries.add(PieEntry(20f, "Chemia gospodarcza"))
-        entries.add(PieEntry(10f, "Inne wydatki"))
-        entries.add(PieEntry(15f, "Rachunki"))
-        entries.add(PieEntry(25f, "Ubranie"))
 
-        dataSet.colors = ArrayList<Int>()
-        dataSet.colors.add(resources.getColor(R.color.teal_200))
-        dataSet.colors.add(resources.getColor(R.color.teal_700))
-        dataSet.colors.add(resources.getColor(R.color.purple_200))
-        dataSet.colors.add(resources.getColor(R.color.purple_500))
-        dataSet.colors.add(resources.getColor(R.color.purple_700))
-
-        dataSet.valueTextSize = 18f
-        dataSet.setValueTextColor(resources.getColor(R.color.white))
-        val data = PieData(dataSet)
-        pieChart.data = data
-        pieChart.description.isEnabled = false
-        pieChart.setEntryLabelColor(android.R.color.black)
-        pieChart.isRotationEnabled = true
-        pieChart.legend.isEnabled = true
-        pieChart.legend.isWordWrapEnabled = true
-        pieChart.legend.horizontalAlignment = Legend.LegendHorizontalAlignment.CENTER
-        pieChart.legend.textSize = 18f // Ustawienie rozmiaru czcionki legendy
-        pieChart.animateY(1000)
-
-        // Przykładowe dane dla listy wydatków
-
-
-        val expenseAdapter = ExpenseAdapter(this, expensesList)
-        expensesListView.adapter = expenseAdapter
     }
 
     private fun addExpense(category: Int, amount: Float) {
@@ -222,6 +218,39 @@ class DashboardActivity : AppCompatActivity() {
             }
         }
     }
+
+    private fun setUpDiagram(){
+        // Przykładowe dane dla wykresu kołowego
+        val entries = ArrayList<PieEntry>()
+        val dataSet = PieDataSet(entries, "")
+        entries.add(PieEntry(100f, "Wolne środki"))
+
+
+        dataSet.colors = ArrayList<Int>()
+        dataSet.colors.add(resources.getColor(R.color.teal_200))
+
+
+        dataSet.valueTextSize = 18f
+        dataSet.setValueTextColor(resources.getColor(R.color.white))
+        val data = PieData(dataSet)
+        pieChart.data = data
+        pieChart.description.isEnabled = false
+        pieChart.setEntryLabelColor(android.R.color.black)
+        pieChart.isRotationEnabled = true
+        pieChart.legend.isEnabled = true
+        pieChart.legend.isWordWrapEnabled = true
+        pieChart.legend.horizontalAlignment = Legend.LegendHorizontalAlignment.CENTER
+        pieChart.legend.textSize = 18f // Ustawienie rozmiaru czcionki legendy
+        pieChart.animateY(1000)
+
+        val expenseAdapter = ExpenseAdapter(this, expensesList)
+        expensesListView.adapter = expenseAdapter
+    }
+
+    private fun updateDiagram(category: Int, amount: Float){
+        //TODO
+    }
+
     data class Expense(val amount: Float, val category: String, val value : String)
 
     class ExpenseAdapter(private val context: Context, private val expenses: List<Expense>) :
