@@ -17,7 +17,7 @@ import com.github.mikephil.charting.components.Legend
 import com.github.mikephil.charting.data.PieData
 import com.github.mikephil.charting.data.PieDataSet
 import com.github.mikephil.charting.data.PieEntry
-import org.w3c.dom.Text
+
 
 class DashboardActivity : AppCompatActivity() {
 
@@ -32,9 +32,10 @@ class DashboardActivity : AppCompatActivity() {
     private lateinit var lackOfData : TextView
     private lateinit var lastSpendVisibility : TextView
     private lateinit var lastSpendVisibilityFrame : ListView
-    private var totalIncome = 0.0
+    private var totalIncome = 0.00
+    private var freeFounds = 100.00
     private val expensesList = arrayListOf<Expense>()
-    val categories = arrayOf(
+    private var categories = arrayOf(
         "Żywność",
         "Chemia gospodarcza",
         "Inne wydatki",
@@ -44,6 +45,8 @@ class DashboardActivity : AppCompatActivity() {
         "Transport",
         "Mieszkanie"
     )
+    private var entries = ArrayList<PieEntry>()
+    private var dataSet = PieDataSet(entries, "")
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -172,10 +175,12 @@ class DashboardActivity : AppCompatActivity() {
                         val enteredAmount = input.text.toString().trim()
                         if(enteredAmount.isNotEmpty() && enteredAmount.toDouble() != 0.00){
                             val selectedCategoryIndex = selectedCategory[0]
-                            if(selectedCategoryIndex != -1){
+                            if(selectedCategoryIndex != -1 && (totalIncome * freeFounds/100.0)>=enteredAmount.toFloat()){
                                 lastSpendVisibility.visibility = View.VISIBLE
                                 lastSpendVisibilityFrame.visibility = View.VISIBLE
                                 addExpense(selectedCategoryIndex,enteredAmount.toFloat())
+                            }else{
+                                Toast.makeText(this, "Nie masz wystarczających środków na koncie.", Toast.LENGTH_SHORT).show()
                             }
                         }else{
                             Toast.makeText(this, "Wprowadź poprawną wartość wydatku (nie zerową).", Toast.LENGTH_SHORT).show()
@@ -202,7 +207,7 @@ class DashboardActivity : AppCompatActivity() {
             // Dodaj nowy wydatek na początku listy
             val selectedCategory = resources.getStringArray(R.array.categories)[category]
             expensesList.add(0, Expense(amount, selectedCategory,"PLN"))
-
+            updateDiagram(category,amount)
             // Uaktualnij widok listy z animacją tylko w przypadku nowego elementu
             if (expensesList.size == 1) {
                 val animation = AnimationUtils.loadAnimation(this, R.anim.slide_down)
@@ -220,18 +225,30 @@ class DashboardActivity : AppCompatActivity() {
     }
 
     private fun setUpDiagram(){
-        // Przykładowe dane dla wykresu kołowego
-        val entries = ArrayList<PieEntry>()
-        val dataSet = PieDataSet(entries, "")
         entries.add(PieEntry(100f, "Wolne środki"))
+        entries.add(PieEntry(0f,"Żywność"))
+        entries.add(PieEntry(0f, "Chemia gospodarcza"))
+        entries.add(PieEntry(0f,"Inne wydatki"))
+        entries.add(PieEntry(0f,"Rachunki"))
+        entries.add(PieEntry(0f,"Ubranie"))
+        entries.add(PieEntry(0f,"Relaks"))
+        entries.add(PieEntry(0f,"Transport"))
+        entries.add(PieEntry(0f,"Mieszkanie"))
 
 
         dataSet.colors = ArrayList<Int>()
         dataSet.colors.add(resources.getColor(R.color.teal_200))
-
+        dataSet.colors.add(resources.getColor(R.color.teal_700))
+        dataSet.colors.add(resources.getColor(R.color.purple_200))
+        dataSet.colors.add(resources.getColor(R.color.purple_500))
+        dataSet.colors.add(resources.getColor(R.color.purple_700))
+        dataSet.colors.add(resources.getColor(R.color.light_green))
+        dataSet.colors.add(resources.getColor(R.color.light_orange))
+        dataSet.colors.add(resources.getColor(R.color.light_red))
+        dataSet.colors.add(resources.getColor(R.color.light_yellow))
+        dataSet.setDrawValues(false)
 
         dataSet.valueTextSize = 18f
-        dataSet.setValueTextColor(resources.getColor(R.color.white))
         val data = PieData(dataSet)
         pieChart.data = data
         pieChart.description.isEnabled = false
@@ -247,8 +264,32 @@ class DashboardActivity : AppCompatActivity() {
         expensesListView.adapter = expenseAdapter
     }
 
-    private fun updateDiagram(category: Int, amount: Float){
-        //TODO
+    private fun updateDiagram(category: Int, amount: Float) {
+        val categoryLabelPlot = resources.getStringArray(R.array.categories)[category]
+        val newPercentage = (amount / totalIncome * 100).toFloat()
+        freeFounds -= newPercentage
+        val existingEntryIndex = entries.indexOfFirst { it.label == categoryLabelPlot }
+        entries[existingEntryIndex] = PieEntry(entries[existingEntryIndex].value + newPercentage,categoryLabelPlot)
+        entries[0]= PieEntry(freeFounds.toFloat(),"Wolne środki")
+
+        // Tworzenie nowego obiektu PieDataSet z aktualnymi danymi
+        dataSet = PieDataSet(entries, "")
+        dataSet.colors = ArrayList<Int>()
+        dataSet.colors.add(resources.getColor(R.color.teal_200))
+        dataSet.colors.add(resources.getColor(R.color.teal_700))
+        dataSet.colors.add(resources.getColor(R.color.purple_200))
+        dataSet.colors.add(resources.getColor(R.color.purple_500))
+        dataSet.colors.add(resources.getColor(R.color.purple_700))
+        dataSet.colors.add(resources.getColor(R.color.light_green))
+        dataSet.colors.add(resources.getColor(R.color.light_orange))
+        dataSet.colors.add(resources.getColor(R.color.light_red))
+        dataSet.colors.add(resources.getColor(R.color.light_yellow))
+        dataSet.setDrawValues(false)
+
+        val data = PieData(dataSet)
+        pieChart.data = data
+        pieChart.notifyDataSetChanged() // Powiadom o zmianie danych w wykresie
+        pieChart.invalidate() // Przerysuj wykres
     }
 
     data class Expense(val amount: Float, val category: String, val value : String)
