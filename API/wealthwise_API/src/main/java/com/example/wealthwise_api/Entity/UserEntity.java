@@ -16,38 +16,49 @@ import java.util.*;
 public class UserEntity  implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id_user;
+    private long idUser;
     @Column(nullable = false,
             unique = true)
     private String email;
-    @Column(nullable = false)a
+    @Column(nullable = false)
     private String password;
     @Column(nullable = false)
     private String username;
     @Column(nullable = false)
-    private LocalDate created_at;
+    private String surname;
+    @Column(nullable = false)
+    private String birthDay;
     @Enumerated(EnumType.STRING)
     private Role role;
 
-
-
-    public UserEntity(String email, String password, String username, LocalDate created_at, Role role) {
+    public UserEntity(long idUser, String email, String password, String username, String surname, String birthDay, Role role) {
+        this.idUser = idUser;
         this.email = email;
         this.password = password;
         this.username = username;
-        this.created_at = created_at;
+        this.surname = surname;
+        this.birthDay = birthDay;
+        this.role = role;
+    }
+
+    public UserEntity(String email, String password, String username, String surname, String birthDay, Role role) {
+        this.email = email;
+        this.password = password;
+        this.username = username;
+        this.surname = surname;
+        this.birthDay = birthDay;
         this.role = role;
     }
 
     public UserEntity() {
     }
 
-    public long getId_user() {
-        return id_user;
+    public long getIdUser() {
+        return idUser;
     }
 
-    public void setId_user(long id_user) {
-        this.id_user = id_user;
+    public void setIdUser(long idUser) {
+        this.idUser = idUser;
     }
 
     public String getEmail() {
@@ -56,6 +67,22 @@ public class UserEntity  implements UserDetails {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public String getSurname() {
+        return surname;
+    }
+
+    public void setSurname(String surname) {
+        this.surname = surname;
+    }
+
+    public String getBirthDay() {
+        return birthDay;
+    }
+
+    public void setBirthDay(String birthDay) {
+        this.birthDay = birthDay;
     }
 
     @Override
@@ -109,14 +136,15 @@ public class UserEntity  implements UserDetails {
         this.username = username;
     }
 
-    public LocalDate getCreated_at() {
-        return created_at;
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof UserEntity that)) return false;
+        return getIdUser() == that.getIdUser() && Objects.equals(getEmail(), that.getEmail()) && Objects.equals(getPassword(), that.getPassword()) && Objects.equals(getUsername(), that.getUsername()) && Objects.equals(getSurname(), that.getSurname()) && Objects.equals(getBirthDay(), that.getBirthDay()) && getRole() == that.getRole();
     }
 
-    public void setCreated_at(LocalDate created_at) {
-        this.created_at = created_at;
+    @Override
+    public int hashCode() {
+        return Objects.hash(getIdUser(), getEmail(), getPassword(), getUsername(), getSurname(), getBirthDay(), getRole());
     }
-
-
-//TODO nadpisać hashcode i equals
 }
