@@ -76,6 +76,7 @@
             android:layout_marginTop="8dp"
             android:background="@drawable/edittext_bg"
             android:hint="Podaj hasło"
+            android:inputType="textWebPassword"
             android:paddingStart="8dp"
             android:paddingEnd="8dp"
             android:textColor="#007acc"
@@ -87,6 +88,7 @@
             android:layout_marginTop="8dp"
             android:background="@drawable/edittext_bg"
             android:hint="Powtórz hasło"
+            android:inputType="textWebPassword"
             android:paddingStart="8dp"
             android:paddingEnd="8dp"
             android:textColor="#007acc"
@@ -105,9 +107,9 @@
         <ImageView
             android:id="@+id/appLogoImageView"
             android:layout_width="330dp"
-            android:layout_height="265dp"
+            android:layout_height="200dp"
             android:layout_gravity="center"
-            android:layout_marginTop="30dp"
+            android:layout_marginTop="10dp"
             android:src="@drawable/app_logo" />
     </LinearLayout>
 </LinearLayout>

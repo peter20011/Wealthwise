@@ -104,7 +104,7 @@ class AssetsActivity : AppCompatActivity() {
             }
 
             override fun onResponse(call: Call, response: Response) {
-                val body = response.body()?.string()
+                val body = response.body.toString()
                 val currencyRates = parseCurrencyRates(body)
                 runOnUiThread {
                     updateCurrencyViews(currencyRates)
