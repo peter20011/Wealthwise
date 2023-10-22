@@ -10,10 +10,16 @@ import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import okhttp3.*
+import okhttp3.logging.HttpLoggingInterceptor
 import org.json.JSONArray
 import org.json.JSONException
-import java.io.IOException
-import kotlin.math.roundToInt
+import org.json.JSONObject
+import retrofit2.Callback
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
+import retrofit2.Call
+import retrofit2.Response
+
 
 class AssetsActivity : AppCompatActivity() {
     private lateinit var currency1Name: TextView
@@ -93,43 +99,48 @@ class AssetsActivity : AppCompatActivity() {
     }
 
     private fun fetchCurrencyRates() {
-        val client = OkHttpClient()
-        val request = Request.Builder()
-            .url("https://api.nbp.pl/api/exchangerates/tables/A/?format=json")
+        val interceptor = HttpLoggingInterceptor()
+        interceptor.level = HttpLoggingInterceptor.Level.BODY
+
+        val client = OkHttpClient.Builder()
+            .addInterceptor(interceptor)
             .build()
 
-        client.newCall(request).enqueue(object : Callback {
-            override fun onFailure(call: Call, e: IOException) {
-                e.printStackTrace()
-            }
+        val retrofit = Retrofit.Builder()
+            .baseUrl("https://api.nbp.pl/api/")
+            .addConverterFactory(GsonConverterFactory.create())
+            .client(client)
+            .build()
 
-            override fun onResponse(call: Call, response: Response) {
-                val body = response.body.toString()
-                val currencyRates = parseCurrencyRates(body)
-                runOnUiThread {
-                    updateCurrencyViews(currencyRates)
+        val service = retrofit.create(ApiService::class.java)
+        val callCurrency: Call<List<CurrencyData>> = service.getCurrencyRates()
+
+        callCurrency.enqueue(object : Callback<List<CurrencyData>> {
+            override fun onResponse(call: Call<List<CurrencyData>>, response: Response<List<CurrencyData>>) {
+                if (response.isSuccessful) {
+                    val currencyDataList = response.body()
+                    if (currencyDataList != null) {
+                        val currencyMap = HashMap<String, Double>()
+
+                        // Przetwarzanie danych i tworzenie mapy
+                        for (rate in currencyDataList[0].rates) {
+                            currencyMap[rate.code] = rate.mid
+                        }
+
+                        // Oto masz gotową mapę kursów walut: currencyMap
+                                updateCurrencyViews(currencyMap)
+                    } else {
+                        println("Brak danych o kursach walut.")
+                    }
+                } else {
+                    println("Błąd w pobieraniu danych.")
                 }
             }
-        })
-    }
 
-    private fun parseCurrencyRates(json: String?): Map<String, Double> {
-        val rates = mutableMapOf<String, Double>()
-
-        try {
-            val jsonArray = JSONArray(json)
-            val ratesArray = jsonArray.getJSONObject(0).getJSONArray("rates")
-            for (i in 0 until ratesArray.length()) {
-                val rate = ratesArray.getJSONObject(i)
-                val currency = rate.getString("code")
-                val value = rate.getDouble("mid")
-                rates[currency] = value
+            override fun onFailure(call: Call<List<CurrencyData>>, t: Throwable) {
+                println("Wystąpił błąd podczas pobierania danych: ${t.message}")
             }
-        } catch (e: JSONException) {
-            e.printStackTrace()
-        }
-
-        return rates
+        })
     }
 
     private fun updateCurrencyViews(currencyRates: Map<String, Double>) {
@@ -382,3 +393,17 @@ class AssetsActivity : AppCompatActivity() {
 
 
 }
+
+
+data class CurrencyData(
+    val table: String,
+    val no: String,
+    val effectiveDate: String,
+    val rates: List<Rate>
+)
+
+data class Rate(
+    val currency: String,
+    val code: String,
+    val mid: Double
+)
