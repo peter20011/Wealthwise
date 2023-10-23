@@ -1,10 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:padding="16dp"
     android:background="#FFFFFF">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:padding="16dp"
+        android:background="#FFFFFF">
+
 
     <!-- Pasek Nawigacyjny (Bottom Navigation Bar) -->
     <LinearLayout
@@ -17,12 +23,12 @@
         <ImageView
             android:id="@+id/homeIcon"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/home_icon"
+            android:layout_height="match_parent"
             android:layout_weight="1"
-            android:clickable="true"
             android:background="@drawable/blue_border"
-            android:onClick="navigateToHome" />
+            android:clickable="true"
+            android:onClick="navigateToHome"
+            android:src="@drawable/home_icon" />
 
         <ImageView
             android:id="@+id/statisticIcon"
@@ -117,4 +123,21 @@
         android:background="@drawable/rounded_button"
         android:onClick="showResetPasswordDialog" />
 
-</LinearLayout>
+    <Button
+        android:id="@+id/addSavingsGoalButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Dodaj cel oszczędzania"
+        android:layout_gravity="center"
+        android:layout_marginTop="16dp"
+        android:textColor="#FFFFFF"
+        android:background="@drawable/rounded_button" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:layout_marginTop="15dp"
+            android:id="@+id/savingsRecyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+    </LinearLayout>
+</ScrollView>

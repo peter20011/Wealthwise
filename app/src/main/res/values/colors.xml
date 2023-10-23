@@ -12,4 +12,6 @@
     <color name="light_orange">#FFFFC040</color>
     <color name="light_red">#FFFF8080</color>
     <color name="light_green">#FF80FF80</color>
+    <color name="colorPrimary">#3F51B5</color>
+    <color name="colorAccent">#FF4081</color>
 </resources>
