@@ -23,7 +23,7 @@ class UserProfileActivity : AppCompatActivity() {
     private lateinit var birthDateTextView: TextView
     private lateinit var resetPasswordButton: Button
     private lateinit var addSavingsGoalButton : Button
-    private val savingsGoals = mutableListOf<SavingsGoal>()
+    private var savingsGoals = mutableListOf<SavingsGoal>()
     private lateinit var adapter: SavingsGoalAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -174,11 +174,8 @@ class UserProfileActivity : AppCompatActivity() {
                     savingsGoals.add(newSavingsGoal)
 
 
-                    // Oblicz postęp w procentach
-                    val percentProgress = (newSavingsGoal.currentAmount / newSavingsGoal.targetAmount * 100).toInt()
-
                     // Aktualizuj wartość postępu w mapie
-                    adapter.updateProgress(savingsGoals.indexOf(newSavingsGoal), percentProgress)
+                    adapter.updateProgress(savingsGoals.indexOf(newSavingsGoal), 0)
 
                     Toast.makeText(this, "Ustalono cel oszczędzania", Toast.LENGTH_SHORT).show()
                     adapter.notifyDataSetChanged()
