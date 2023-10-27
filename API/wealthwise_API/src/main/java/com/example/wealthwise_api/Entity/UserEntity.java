@@ -31,6 +31,17 @@ public class UserEntity  implements UserDetails {
     @Enumerated(EnumType.STRING)
     private Role role;
 
+    @OneToMany(mappedBy = "userEntity",fetch = FetchType.LAZY,cascade = CascadeType.ALL)
+    private Set<SavingsGoals> savingsGoalsSet;
+    @OneToMany(mappedBy = "userEntity",fetch = FetchType.LAZY,cascade = CascadeType.ALL)
+    private Set<Assets> assetsSet;
+
+    @OneToMany(mappedBy = "userEntity",fetch = FetchType.LAZY,cascade = CascadeType.ALL)
+    private Set<Incomes> incomesSet;
+
+    @OneToMany(mappedBy = "userEntity",fetch = FetchType.LAZY,cascade = CascadeType.ALL)
+    private Set<Expenses> expensesSet;
+
     public UserEntity(long idUser, String email, String password, String username, String surname, String birthDay, Role role) {
         this.idUser = idUser;
         this.email = email;

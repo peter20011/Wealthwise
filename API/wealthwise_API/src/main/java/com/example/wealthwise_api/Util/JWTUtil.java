@@ -1,7 +1,7 @@
 package com.example.wealthwise_api.Util;
 
-import com.example.wealthwise_api.Entity.Token;
-import com.example.wealthwise_api.Repository.JWTokenRepository;
+//import com.example.wealthwise_api.Entity.Token;
+//import com.example.wealthwise_api.Repository.JWTokenRepository;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -18,19 +18,20 @@ import java.util.List;
 import java.util.Map;
 
 import static java.time.temporal.ChronoUnit.DAYS;
+import static java.time.temporal.ChronoUnit.MINUTES;
 
 @Service
 public class JWTUtil {
 
     Logger logger = LoggerFactory.getLogger(JWTUtil.class);
-    JWTokenRepository jwtTokenRepository;
+//    JWTokenRepository jwtTokenRepository;
 
     private static final String SECRET_KEY=
             "maka_987654321_maka_987654321_maka_987654321_maka_987654321";
 
-    public JWTUtil(JWTokenRepository jwtTokenRepository) {
-        this.jwtTokenRepository = jwtTokenRepository;
-    }
+//    public JWTUtil(JWTokenRepository jwtTokenRepository) {
+//        this.jwtTokenRepository = jwtTokenRepository;
+//    }
 
     public String issueToken(String subject) {
         return issueToken(subject, Map.of());
@@ -50,7 +51,7 @@ public class JWTUtil {
                 .setSubject(subject)
                 .setIssuedAt(Date.from(Instant.now()))
                 .setExpiration(
-                        Date.from(Instant.now().plus(1,DAYS))
+                        Date.from(Instant.now().plus(15,MINUTES))
                 ).signWith(getSigningKey(), SignatureAlgorithm.HS256)
                 .compact();
 
@@ -76,21 +77,21 @@ public class JWTUtil {
     public boolean isTokenValid(String jwt, String username) {
 
         String subject = getSubject(jwt);
-        return subject.equals(username) && !isTokenExpired(jwt) && !isTokenOnBlackList(jwt);
+        return subject.equals(username) && !isTokenExpired(jwt);
     }
 
-    private boolean isTokenOnBlackList(String jwt) {
-        return jwtTokenRepository.existsByToken(jwt);
-
-    }
+//    private boolean isTokenOnBlackList(String jwt) {
+//        return jwtTokenRepository.existsByToken(jwt);
+//          isTokenOnBlackList(jwt);
+//    }
 
     private boolean isTokenExpired(String jwt) {
         Date today = Date.from(Instant.now());
         return getClaims(jwt).getExpiration().before(today);
     }
 
-    public void setTokenToList(String jwt) {
-        Token token = new Token(jwt ,getClaims(jwt).getExpiration());
-    }
+//    public void setTokenToList(String jwt) {
+//        Token token = new Token(jwt ,getClaims(jwt).getExpiration());
+//    }
 
 }

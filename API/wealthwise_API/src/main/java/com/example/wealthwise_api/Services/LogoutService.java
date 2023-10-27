@@ -48,7 +48,6 @@ public class LogoutService implements LogoutHandler {
                 logger.warn("logout - userEntity "+userEntity);
 
                 if(jwtUtil.isTokenValid(jwt, userEntity.getEmail())) {
-                    jwtUtil.setTokenToList(jwt);
                     SecurityContextHolder.clearContext();
 
                 }}
