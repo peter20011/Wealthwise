@@ -1,7 +1,11 @@
 package com.example.wealthwise_api.Util;
 
 //import com.example.wealthwise_api.Entity.Token;
-//import com.example.wealthwise_api.Repository.JWTokenRepository;
+//import com.example.wealthwise_api.Repository.JWTokenAccessRepository;
+import com.example.wealthwise_api.Entity.AccessToken;
+import com.example.wealthwise_api.Entity.RefreshToken;
+import com.example.wealthwise_api.Repository.JWTokenAccessRepository;
+import com.example.wealthwise_api.Repository.JWTokenRefreshRepository;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -24,24 +28,19 @@ import static java.time.temporal.ChronoUnit.MINUTES;
 public class JWTUtil {
 
     Logger logger = LoggerFactory.getLogger(JWTUtil.class);
-//    JWTokenRepository jwtTokenRepository;
+    private final JWTokenAccessRepository jwTokenAccessRepository;
+    private final JWTokenRefreshRepository jwtTokenRefreshRepository;
 
-    private static final String SECRET_KEY=
-            "maka_987654321_maka_987654321_maka_987654321_maka_987654321";
+    private static final String SECRET_KEY= "maka_987654321_maka_987654321_maka_987654321_maka_987654321";
+    private static final long ACCESS_TOKEN_EXPIRATION = 15 * 60 * 1000; // Czas ważności tokenu dostępu (15 minut)
+    private static final long REFRESH_TOKEN_EXPIRATION = 5 * 24 * 60 * 60 * 1000; // Czas ważności tokenu odświeżania (30 dni)
 
-//    public JWTUtil(JWTokenRepository jwtTokenRepository) {
-//        this.jwtTokenRepository = jwtTokenRepository;
-//    }
-
-    public String issueToken(String subject) {
-        return issueToken(subject, Map.of());
+    public JWTUtil(JWTokenAccessRepository jwTokenAccessRepository, JWTokenRefreshRepository jwtTokenRefreshRepository) {
+        this.jwTokenAccessRepository = jwTokenAccessRepository;
+        this.jwtTokenRefreshRepository = jwtTokenRefreshRepository;
     }
 
     public String issueToken(String subject, String ...scopes) {
-        return issueToken(subject, Map.of("scopes", scopes));
-    }
-
-    public String issueToken(String subject, List<String> scopes) {
         return issueToken(subject, Map.of("scopes", scopes));
     }
 
@@ -49,12 +48,20 @@ public class JWTUtil {
         return Jwts.builder()
                 .setClaims(claims)
                 .setSubject(subject)
-                .setIssuedAt(Date.from(Instant.now()))
-                .setExpiration(
-                        Date.from(Instant.now().plus(15,MINUTES))
-                ).signWith(getSigningKey(), SignatureAlgorithm.HS256)
+                .setIssuedAt(new Date())
+                .setExpiration(new Date(System.currentTimeMillis() + ACCESS_TOKEN_EXPIRATION))
+                .signWith(getSigningKey(), SignatureAlgorithm.HS256)
                 .compact();
 
+    }
+
+    public String issueRefreshToken(String subject){
+        return Jwts.builder()
+                .setSubject(subject)
+                .setIssuedAt(new Date())
+                .setExpiration(new Date(System.currentTimeMillis() + REFRESH_TOKEN_EXPIRATION))
+                .signWith(getSigningKey(), SignatureAlgorithm.HS256)
+                .compact();
     }
 
     public String getSubject(String token) {
@@ -69,29 +76,40 @@ public class JWTUtil {
                 .parseClaimsJws(token)
                 .getBody();
     }
-
     private Key getSigningKey() {
         return Keys.hmacShaKeyFor(SECRET_KEY.getBytes());
     }
 
-    public boolean isTokenValid(String jwt, String username) {
+    public boolean isAccessTokenValid(String jwt) {
+        AccessToken accessToken = jwTokenAccessRepository.findByToken(jwt);
+        if(accessToken != null &&accessToken.getExpirationTime().after(new Date())){
+            return true;
+        }
 
-        String subject = getSubject(jwt);
-        return subject.equals(username) && !isTokenExpired(jwt);
+        return false;
     }
 
-//    private boolean isTokenOnBlackList(String jwt) {
-//        return jwtTokenRepository.existsByToken(jwt);
-//          isTokenOnBlackList(jwt);
-//    }
-
-    private boolean isTokenExpired(String jwt) {
-        Date today = Date.from(Instant.now());
-        return getClaims(jwt).getExpiration().before(today);
+    public boolean isRefreshTokenValid(String jwt) {
+        RefreshToken refreshToken = jwtTokenRefreshRepository.findByToken(jwt);
+        if(refreshToken != null && refreshToken.getExpirationTime().after(new Date())){
+            return true;
+        }
+        return false;
     }
 
-//    public void setTokenToList(String jwt) {
-//        Token token = new Token(jwt ,getClaims(jwt).getExpiration());
-//    }
+    public Date extractExpiration(String token) {
+        return getClaims(token).getExpiration();
+    }
+
+    public void deleteAccessToken(String subject){
+        AccessToken accessToken = jwTokenAccessRepository.findBySubject(subject);
+        jwTokenAccessRepository.delete(accessToken);
+
+    }
+
+    public void deleteRefreshToken(String subject){
+        RefreshToken refreshToken = jwtTokenRefreshRepository.findBySubject(subject);
+        jwtTokenRefreshRepository.delete(refreshToken);
+    }
 
 }

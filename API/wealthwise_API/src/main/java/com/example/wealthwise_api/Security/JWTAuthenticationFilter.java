@@ -45,7 +45,7 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
         if(subject!= null && SecurityContextHolder.getContext().getAuthentication()==null) {
             UserEntity userEntity = (UserEntity) userDetailsService.loadUserByUsername(subject);
 
-            if(jwtUtil.isTokenValid(jwt,userEntity.getEmail())){
+            if(jwtUtil.isAccessTokenValid(jwt)){
 
                 UsernamePasswordAuthenticationToken authenticationToken= new UsernamePasswordAuthenticationToken(userEntity,null,
                         userEntity.getAuthorities());

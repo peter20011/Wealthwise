@@ -1,6 +1,10 @@
 package com.example.wealthwise_api.Services;
 
+import com.example.wealthwise_api.Entity.AccessToken;
+import com.example.wealthwise_api.Entity.RefreshToken;
 import com.example.wealthwise_api.Entity.UserEntity;
+import com.example.wealthwise_api.Repository.JWTokenRefreshRepository;
+import com.example.wealthwise_api.Repository.JWTokenAccessRepository;
 import com.example.wealthwise_api.Util.JWTUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -19,11 +23,18 @@ public class LogoutService implements LogoutHandler {
     private final JWTUtil jwtUtil;
     Logger logger = LoggerFactory.getLogger(LogoutService.class);
     private final UserServiceDetails userServiceDetails;
+    private final JWTokenAccessRepository jwtTokenAccessRepository;
+
+    private final JWTokenRefreshRepository jwtTokenRefreshRepository;
 
 
-    public LogoutService(JWTUtil jwtUtil, UserServiceDetails userServiceDetails) {
+    public LogoutService(JWTUtil jwtUtil, UserServiceDetails userServiceDetails,
+                         JWTokenAccessRepository jwtTokenAccessRepository,
+                            JWTokenRefreshRepository jwtTokenRefreshRepository) {
         this.jwtUtil = jwtUtil;
         this.userServiceDetails = userServiceDetails;
+        this.jwtTokenAccessRepository = jwtTokenAccessRepository;
+        this.jwtTokenRefreshRepository = jwtTokenRefreshRepository;
     }
 
 
@@ -47,7 +58,14 @@ public class LogoutService implements LogoutHandler {
                 UserEntity userEntity = (UserEntity) userServiceDetails.loadUserByUsername(email);
                 logger.warn("logout - userEntity "+userEntity);
 
-                if(jwtUtil.isTokenValid(jwt, userEntity.getEmail())) {
+                if(jwtUtil.isAccessTokenValid(jwt)) {
+
+                    RefreshToken refreshToken = jwtTokenRefreshRepository.findBySubject(email);
+                    jwtTokenRefreshRepository.delete(refreshToken);
+
+                    AccessToken accessToken = jwtTokenAccessRepository.findBySubject(email);
+                    jwtTokenAccessRepository.delete(accessToken);
+
                     SecurityContextHolder.clearContext();
 
                 }}
@@ -56,4 +74,6 @@ public class LogoutService implements LogoutHandler {
         }
 
     }
+
+
 }

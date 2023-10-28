@@ -1,5 +1,6 @@
 package com.example.wealthwise_api.DTO;
 
-public record AuthenticationResponse(String token,
+public record AuthenticationResponse(String tokenAccess,
+                                     String tokenRefresh,
                                      String message) {
 }

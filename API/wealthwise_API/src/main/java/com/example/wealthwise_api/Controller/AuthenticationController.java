@@ -1,6 +1,7 @@
 package com.example.wealthwise_api.Controller;
 
 import com.example.wealthwise_api.DTO.AuthenticationRequest;
+import com.example.wealthwise_api.DTO.AuthenticationRequestToken;
 import com.example.wealthwise_api.DTO.UserRegistrationRequest;
 import com.example.wealthwise_api.Services.AuthenticationService;
 import com.example.wealthwise_api.Services.RegistrationService;
@@ -32,6 +33,11 @@ public class AuthenticationController {
     @PostMapping(value = "/register", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> register(@RequestBody UserRegistrationRequest request){
         return registrationService.register(request);
+    }
+
+    @PostMapping(value = "refreshToken", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> refreshToken(@RequestBody AuthenticationRequestToken refreshToken){
+        return authenticationService.refreshToken(refreshToken);
     }
 
 }
