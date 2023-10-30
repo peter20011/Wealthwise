@@ -8,6 +8,8 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.Toast
+import at.favre.lib.crypto.bcrypt.BCrypt
+import com.example.wealthwise.DataClass.RegistrationData
 import java.util.regex.Pattern
 import java.text.SimpleDateFormat
 import java.text.ParseException
@@ -43,7 +45,7 @@ class RegistrationActivity : AppCompatActivity() {
 
         val backButton = findViewById<ImageView>(R.id.backButton)
         val submitButton = findViewById<Button>(R.id.submitButton)
-        val context : Context = applicationContext
+        val context: Context = applicationContext
 
 
         backButton.setOnClickListener {
@@ -90,6 +92,8 @@ class RegistrationActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
 
+
+
             // Walidacja daty urodzenia w formacie "DD-MM-RRRR"
             val datePattern = "^(0[1-9]|[12][0-9]|3[01])-(0[1-9]|1[0-2])-\\d{4}$"
 
@@ -112,6 +116,7 @@ class RegistrationActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
 
+
             val interceptor = HttpLoggingInterceptor()
             interceptor.level = HttpLoggingInterceptor.Level.BODY
 
@@ -129,8 +134,7 @@ class RegistrationActivity : AppCompatActivity() {
             val apiService = retrofit.create(ApiService::class.java)
 
             // Utwórz obiekt reprezentujący dane rejestracji
-            val registrationData =
-                RegistrationData(name, surname, birthDay, email, password, confirmPassword)
+            val registrationData = RegistrationData(name, surname, birthDay, email, password, confirmPassword)
             val call = apiService.registerUser(registrationData)
 
             call.enqueue(object : Callback<ResponseBody> {
@@ -140,10 +144,16 @@ class RegistrationActivity : AppCompatActivity() {
                 ) {
                     if (response.isSuccessful) {
                         // Pomyślna odpowiedź
-                        val responseData = response.body().toString()
-                        Toast.makeText(context,"Zarejestrowano pomyślnie",Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, "Zarejestrowano pomyślnie", Toast.LENGTH_SHORT)
+                            .show()
+                        val intent = Intent(context, LoginActivity::class.java)
+                        startActivity(intent)
                     } else {
-                        Toast.makeText(context,"Użytkownik już istnieje o podanym adresie email",Toast.LENGTH_SHORT).show()
+                        Toast.makeText(
+                            context,
+                            "Użytkownik już istnieje o podanym adresie email",
+                            Toast.LENGTH_SHORT
+                        ).show()
                     }
                 }
 
@@ -153,5 +163,4 @@ class RegistrationActivity : AppCompatActivity() {
         }
     }
 }
-data class RegistrationData(val name: String, val surname: String, val birthDay: String, val email: String, val password: String, val confirmPassword: String)
 

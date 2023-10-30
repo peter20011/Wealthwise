@@ -10,6 +10,7 @@ import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
+import com.example.wealthwise.DataClass.SavingsGoal
 
 class SavingsGoalAdapter(private val savingsGoals: MutableList<SavingsGoal>) :
     RecyclerView.Adapter<SavingsGoalAdapter.SavingsGoalViewHolder>() {

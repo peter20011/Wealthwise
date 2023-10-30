@@ -1,7 +1,5 @@
 package com.example.wealthwise_api.Util;
 
-//import com.example.wealthwise_api.Entity.Token;
-//import com.example.wealthwise_api.Repository.JWTokenAccessRepository;
 import com.example.wealthwise_api.Entity.AccessToken;
 import com.example.wealthwise_api.Entity.RefreshToken;
 import com.example.wealthwise_api.Repository.JWTokenAccessRepository;

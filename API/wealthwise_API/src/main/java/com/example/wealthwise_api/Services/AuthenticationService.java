@@ -78,13 +78,14 @@ public class AuthenticationService {
                     logger.error("Error deleting token refresh: " + e.getMessage());
                 }
             }
+
             String tokenAccess = jwtUtil.issueToken(userDTO.email(), userDTO.role().toString());
             String tokenRefresh = jwtUtil.issueRefreshToken(userDTO.email());
 
             SecurityContextHolder.getContext().setAuthentication(authentication);
             saveTokenAccess(tokenAccess);
             saveTokenRefresh(tokenRefresh);
-            return new ResponseEntity<>(new AuthenticationResponse(tokenAccess, tokenRefresh,"Login success"), HttpStatus.OK);
+            return new ResponseEntity<>(new AuthenticationResponse(tokenAccess, tokenRefresh), HttpStatus.OK);
         }catch(AuthenticationException e){
             return new ResponseEntity<>(e.getMessage(), HttpStatus.UNAUTHORIZED);
         }
@@ -101,7 +102,7 @@ public class AuthenticationService {
     }
 
     public ResponseEntity<?> refreshToken(AuthenticationRequestToken refreshToken){
-        System.out.println("refreshToken: " + refreshToken);
+
         try{
             if(jwtUtil.isRefreshTokenValid(refreshToken.refreshToken())){
                 String email = jwtUtil.getSubject(refreshToken.refreshToken());
@@ -111,10 +112,9 @@ public class AuthenticationService {
                 UserEntity principal = userEntityRepository.findByEmail(email);
                 String newAccessToken = jwtUtil.issueToken(principal.getEmail(), principal.getRole().toString());
                 String newRefreshToken = jwtUtil.issueRefreshToken(principal.getEmail());
-
                 saveTokenAccess(newAccessToken);
                 saveTokenRefresh(newRefreshToken);
-                return new ResponseEntity<>(new AuthenticationResponse(newAccessToken, newRefreshToken,"Token refreshed"), HttpStatus.OK);
+                return new ResponseEntity<>(new AuthenticationResponse(newAccessToken, newRefreshToken), HttpStatus.OK);
             }else{
                 String email = jwtUtil.getSubject(refreshToken.refreshToken());
                 jwtUtil.deleteRefreshToken(email);

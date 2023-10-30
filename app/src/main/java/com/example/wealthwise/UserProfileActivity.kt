@@ -1,11 +1,11 @@
 package com.example.wealthwise
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AlertDialog
 import android.text.InputType
-import android.view.View
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
@@ -14,6 +14,16 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.wealthwise.DataClass.ChangePassword
+import com.example.wealthwise.DataClass.SavingsGoal
+import okhttp3.OkHttpClient
+import okhttp3.ResponseBody
+import okhttp3.logging.HttpLoggingInterceptor
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
 
 class UserProfileActivity : AppCompatActivity() {
 
@@ -25,9 +35,26 @@ class UserProfileActivity : AppCompatActivity() {
     private lateinit var addSavingsGoalButton : Button
     private var savingsGoals = mutableListOf<SavingsGoal>()
     private lateinit var adapter: SavingsGoalAdapter
-
+    private val BASE_URL = "http://10.0.2.2:8080"
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        val tokenManager = TokenManager(this)
+        val tokenAccess = tokenManager.getTokenAccess()
+        val tokenRefresh = tokenManager.getTokenRefresh()
+
+        if(tokenAccess == null || tokenRefresh == null){
+            val intent = Intent(this, LoginActivity::class.java)
+            startActivity(intent)
+            finish()
+            Toast.makeText(this, "Brak uprawnień", Toast.LENGTH_SHORT).show()
+        }
+
+        if(tokenManager.refreshTokenIfNeeded()){
+            Toast.makeText(this, "Token odświeżony", Toast.LENGTH_SHORT).show()
+        }
+
+
         setContentView(R.layout.activity_user_profile)
 
         // Inicjalizacja widoków
@@ -86,7 +113,7 @@ class UserProfileActivity : AppCompatActivity() {
     }
 
     // Metoda do wyświetlenia dwuetapowego okna dialogowego do resetowania hasła
-    private fun showResetPasswordDialog() {
+     fun showResetPasswordDialog() {
         val builder = AlertDialog.Builder(this,R.style.AlertDialogTheme)
         builder.setTitle("Podaj obecne hasło")
 
@@ -119,9 +146,48 @@ class UserProfileActivity : AppCompatActivity() {
 
                 // Tutaj można dodać logikę do zmiany hasła na serwerze lub w lokalnym składowisku
                 if (currentPassword.isNotEmpty() && newPassword.isNotEmpty()) {
-                    Toast.makeText(this, "Hasło zostało zmienione", Toast.LENGTH_SHORT).show()
+                    val tokenManager = TokenManager(this)
+                    if(tokenManager.refreshTokenIfNeeded()){
+                        Toast.makeText(this, "Token odświeżony", Toast.LENGTH_SHORT).show()
+                    }
+
+                    val interceptor = HttpLoggingInterceptor()
+                    interceptor.level = HttpLoggingInterceptor.Level.BODY
+
+                    val client = OkHttpClient.Builder()
+                        .addInterceptor(interceptor)
+                        .build()
+
+                    val retrofit = Retrofit.Builder()
+                        .baseUrl(BASE_URL)
+                        .addConverterFactory(GsonConverterFactory.create())
+                        .client(client)
+                        .build()
+
+                    val authHeader = "Bearer " + tokenManager.getTokenAccess().toString()
+                    val changePassword = ChangePassword(tokenManager.getTokenAccess().toString(),currentPassword, newPassword)
+                    val apiService = retrofit.create(ApiService::class.java)
+
+                    val call = apiService.changePassword(authHeader, changePassword)
+
+                    call.enqueue(object : Callback<ResponseBody> {
+                        override fun onResponse(
+                            call: Call<ResponseBody>,
+                            response: Response<ResponseBody>
+                        ) {
+                            if (response.isSuccessful) {
+                                Toast.makeText(this@UserProfileActivity, "Hasło zostało zmienione", Toast.LENGTH_SHORT).show()
+                            }else{
+                                Toast.makeText(this@UserProfileActivity, "Wystąpił błąd podczas zmiany hasła", Toast.LENGTH_SHORT).show()
+                            }
+                        }
+                        override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
+                            Toast.makeText(this@UserProfileActivity, "Wystąpił błąd podczas zmiany hasła: " + t.message, Toast.LENGTH_SHORT).show()
+                        }
+                    })
+
                 } else {
-                    Toast.makeText(this, "Błąd podczas zmiany hasła. Sprawdź dane i spróbuj ponownie.", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@UserProfileActivity, "Błąd podczas zmiany hasła. Sprawdź dane i spróbuj ponownie.", Toast.LENGTH_SHORT).show()
                 }
             }
 

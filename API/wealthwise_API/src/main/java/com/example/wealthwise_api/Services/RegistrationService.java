@@ -30,6 +30,10 @@ public class RegistrationService {
 
     public ResponseEntity<Object> register(UserRegistrationRequest request){
 
+        if(request.email().isEmpty() || request.password().isEmpty() || request.confirmPassword().isEmpty() || request.name().isEmpty() || request.surname().isEmpty() || request.birthDay().isEmpty()){
+            return  new ResponseEntity<>( new AuthenticationFailedResponse("Please fill all fields!"), HttpStatus.BAD_REQUEST);
+        }
+
         if(!emailValidatorService.test(request.email())){
             return  new ResponseEntity<>( new AuthenticationFailedResponse("Email is not valid!"), HttpStatus.BAD_REQUEST);
         }
@@ -46,8 +50,9 @@ public class RegistrationService {
             return  new ResponseEntity<>( new AuthenticationFailedResponse("Passwords do not match!"), HttpStatus.BAD_REQUEST);
         }
 
+
         UserEntity userEntity = new UserEntity(
-            request.email(), passwordEncoder.encode(request.password()), request.name(), request.surname(),request.birthDay(), Role.USER
+            request.email(), passwordEncoder.encode(request.confirmPassword()), request.name(), request.surname(),request.birthDay(), Role.USER
         );
 
         userDAO.save(userEntity);

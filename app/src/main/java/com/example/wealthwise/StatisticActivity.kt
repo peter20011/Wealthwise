@@ -5,6 +5,7 @@ import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
 import android.widget.ImageView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.github.mikephil.charting.charts.BarChart
 import com.github.mikephil.charting.components.XAxis
@@ -17,6 +18,22 @@ import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
 class StatisticActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        val tokenManager = TokenManager(this)
+        val tokenAccess = tokenManager.getTokenAccess()
+        val tokenRefresh = tokenManager.getTokenRefresh()
+
+        if(tokenAccess == null || tokenRefresh == null){
+            val intent = Intent(this, LoginActivity::class.java)
+            startActivity(intent)
+            finish()
+            Toast.makeText(this, "Brak uprawnień", Toast.LENGTH_SHORT).show()
+        }
+
+        if(tokenManager.refreshTokenIfNeeded()){
+            Toast.makeText(this, "Token odświeżony", Toast.LENGTH_SHORT).show()
+        }
+
         setContentView(R.layout.activity_statistic)
 
         val homeIcon = findViewById<ImageView>(R.id.homeIcon)

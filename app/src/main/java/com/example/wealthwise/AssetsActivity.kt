@@ -36,6 +36,24 @@ class AssetsActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        val tokenManager = TokenManager(this)
+        val tokenAccess = tokenManager.getTokenAccess()
+        val tokenRefresh = tokenManager.getTokenRefresh()
+
+        if(tokenAccess == null || tokenRefresh == null){
+            val intent = Intent(this, LoginActivity::class.java)
+            startActivity(intent)
+            finish()
+            Toast.makeText(this, "Brak uprawnień", Toast.LENGTH_SHORT).show()
+        }
+
+        if(tokenManager.refreshTokenIfNeeded()){
+            Toast.makeText(this, "Token odświeżony", Toast.LENGTH_SHORT).show()
+        }
+
+
+
         setContentView(R.layout.activity_assets)
 
         val homeIcon = findViewById<ImageView>(R.id.homeIcon)

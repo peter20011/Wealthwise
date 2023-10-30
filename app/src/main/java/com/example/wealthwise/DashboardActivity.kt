@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.text.InputType
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,11 +13,21 @@ import android.view.animation.AnimationUtils
 import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import com.example.wealthwise.DataClass.Expense
 import com.github.mikephil.charting.charts.PieChart
 import com.github.mikephil.charting.components.Legend
 import com.github.mikephil.charting.data.PieData
 import com.github.mikephil.charting.data.PieDataSet
 import com.github.mikephil.charting.data.PieEntry
+import okhttp3.OkHttpClient
+import okhttp3.ResponseBody
+import okhttp3.logging.HttpLoggingInterceptor
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
+import kotlin.math.log
 
 
 class DashboardActivity : AppCompatActivity() {
@@ -32,6 +43,7 @@ class DashboardActivity : AppCompatActivity() {
     private lateinit var lackOfData : TextView
     private lateinit var lastSpendVisibility : TextView
     private lateinit var lastSpendVisibilityFrame : ListView
+    private lateinit var logoutButton : Button
     private var totalIncome = 0.00
     private var freeFounds = 100.00
     private val expensesList = arrayListOf<Expense>()
@@ -47,11 +59,28 @@ class DashboardActivity : AppCompatActivity() {
     )
     private var entries = ArrayList<PieEntry>()
     private var dataSet = PieDataSet(entries, "")
+    private val BASE_URL = "http://10.0.2.2:8080"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_dashboard)
 
+        val tokenManager = TokenManager(this)
+        val tokenAccess = tokenManager.getTokenAccess()
+        val tokenRefresh = tokenManager.getTokenRefresh()
+
+        if(tokenAccess == null || tokenRefresh == null){
+            val intent = Intent(this, LoginActivity::class.java)
+            startActivity(intent)
+            finish()
+            Toast.makeText(this, "Brak uprawnień", Toast.LENGTH_SHORT).show()
+        }
+
+        if(tokenManager.refreshTokenIfNeeded()){
+            Toast.makeText(this, "Token odświeżony", Toast.LENGTH_SHORT).show()
+        }
+
+
+        setContentView(R.layout.activity_dashboard)
         // Inicjalizacja widoków
         incomeButton = findViewById(R.id.incomeButton)
         expenseButton = findViewById(R.id.expenseButton)
@@ -64,13 +93,14 @@ class DashboardActivity : AppCompatActivity() {
         lackOfData = findViewById(R.id.lackOfData)
         lastSpendVisibility = findViewById(R.id.lastSpend)
         lastSpendVisibilityFrame = findViewById(R.id.expensesListView)
+        logoutButton = findViewById(R.id.logoutButton)
 
         val homeIcon = findViewById<ImageView>(R.id.homeIcon)
         val statisticIcon = findViewById<ImageView>(R.id.statisticIcon)
         val profileIcon = findViewById<ImageView>(R.id.profileIcon)
         val assetsIcon = findViewById<ImageView>(R.id.assetsIcon)
-
         val logoutButton = findViewById<Button>(R.id.logoutButton)
+        val context : Context = applicationContext
 
         homeIcon.setBackgroundResource(R.drawable.blue_border)
         statisticIcon.setBackgroundResource(0) // Usuwa tło lub obramowanie
@@ -95,6 +125,44 @@ class DashboardActivity : AppCompatActivity() {
         assetsIcon.setOnClickListener {
             val intent = Intent(this, AssetsActivity::class.java)
             startActivity(intent)
+        }
+
+
+        logoutButton.setOnClickListener{
+            val interceptor = HttpLoggingInterceptor()
+            interceptor.level = HttpLoggingInterceptor.Level.BODY
+
+            val client = OkHttpClient.Builder()
+                .addInterceptor(interceptor)
+                .build()
+
+            val retrofit = Retrofit.Builder()
+                .baseUrl(BASE_URL)
+                .addConverterFactory(GsonConverterFactory.create())
+                .client(client)
+                .build()
+            val authHeader = "Bearer " + tokenManager.getTokenAccess().toString()
+            val apiService = retrofit.create(ApiService::class.java)
+
+            val call = apiService.logoutUser(authHeader)
+
+            call.enqueue(object : Callback<ResponseBody> {
+                override fun onResponse(
+                    call: Call<ResponseBody>,
+                    response: Response<ResponseBody>
+                ) {
+                    if (response.isSuccessful) {
+                        // Pomyślna odpowiedź
+                        tokenManager.clearToken()
+                        val intent = Intent(context, LoginActivity::class.java)
+                        startActivity(intent)
+                        Toast.makeText(context,"Użytkownik wylogowany pomyślnie",Toast.LENGTH_SHORT).show()
+                    }
+                }
+                override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
+                }
+            })
+
         }
 
         // Ustawienie tekstu powitania
@@ -292,8 +360,6 @@ class DashboardActivity : AppCompatActivity() {
         pieChart.invalidate() // Przerysuj wykres
     }
 
-    data class Expense(val amount: Float, val category: String, val value : String)
-
     class ExpenseAdapter(private val context: Context, private val expenses: List<Expense>) :
         BaseAdapter() {
         override fun getCount(): Int {
@@ -323,3 +389,4 @@ class DashboardActivity : AppCompatActivity() {
         }
     }
 }
+

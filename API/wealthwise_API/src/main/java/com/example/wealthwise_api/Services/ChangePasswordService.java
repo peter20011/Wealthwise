@@ -38,12 +38,12 @@ public class ChangePasswordService {
             if(!passwordEncoder.matches(request.password(), userEntity.getPassword())){
                 return new ResponseEntity<>("Old password is incorrect", HttpStatus.BAD_REQUEST);
             }
-            if(request.password().equals(request.confirmPassword())){
+            if(!request.password().equals(request.confirmPassword())){
                 userEntity.setPassword(passwordEncoder.encode(request.confirmPassword()));
                 userDAO.save(userEntity);
                 return new ResponseEntity<>("Password changed successfully", HttpStatus.OK);
             }
-            return new ResponseEntity<>("New password and confirm password are not the same", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>("New password and confirm password are the same", HttpStatus.BAD_REQUEST);
         }catch (Exception e){
             return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
