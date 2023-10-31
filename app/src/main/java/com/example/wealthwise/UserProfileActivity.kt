@@ -16,6 +16,9 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.wealthwise.DataClass.ChangePassword
 import com.example.wealthwise.DataClass.SavingsGoal
+import com.example.wealthwise.DataClass.SavingsGoalRequest
+import com.example.wealthwise.DataClass.TokenRequest
+import com.example.wealthwise.DataClass.UserDataResponse
 import okhttp3.OkHttpClient
 import okhttp3.ResponseBody
 import okhttp3.logging.HttpLoggingInterceptor
@@ -24,6 +27,7 @@ import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import java.util.regex.Pattern
 
 class UserProfileActivity : AppCompatActivity() {
 
@@ -70,20 +74,72 @@ class UserProfileActivity : AppCompatActivity() {
         adapter = SavingsGoalAdapter(savingsGoals)
         recyclerView.adapter = adapter
 
-        // Ustawienie informacji o użytkowniku (można pobrać te dane z serwera lub SharedPreferences)
-        firstNameTextView.text = "Imię: John"
-        lastNameTextView.text = "Nazwisko: Doe"
-        emailTextView.text = "Email: johndoe@example.com"
-        birthDateTextView.text = "Data urodzenia: 01-01-1990"
+        val interceptor = HttpLoggingInterceptor()
+        interceptor.level = HttpLoggingInterceptor.Level.BODY
 
-        // Obsługa przycisku "Zresetuj hasło"
-        resetPasswordButton.setOnClickListener {
-            showResetPasswordDialog()
-        }
+        val client = OkHttpClient.Builder()
+            .addInterceptor(interceptor)
+            .build()
 
-        addSavingsGoalButton.setOnClickListener{
-            addSavingsGoal(adapter)
-        }
+        val retrofit = Retrofit.Builder()
+            .baseUrl(BASE_URL)
+            .addConverterFactory(GsonConverterFactory.create())
+            .client(client)
+            .build()
+
+        val authHeader = "Bearer " + tokenManager.getTokenAccess().toString()
+        val apiService = retrofit.create(ApiService::class.java)
+
+        val tokenRequest = TokenRequest(tokenManager.getTokenAccess().toString())
+
+        val call = apiService.getUserData(authHeader,tokenRequest)
+
+        call.enqueue(object : Callback<UserDataResponse> {
+            override fun onResponse(
+                call: Call<UserDataResponse>,
+                response: Response<UserDataResponse>
+            ) {
+                if (response.isSuccessful) {
+                    val userDataResponse = response.body()
+                    firstNameTextView.text = "Imię: " + userDataResponse?.name
+                    lastNameTextView.text = "Nazwisko: " + userDataResponse?.surname
+                    emailTextView.text = "Email: " + userDataResponse?.email
+                    birthDateTextView.text = "Data urodzenia: " + userDataResponse?.birthDay
+                }else{
+                    firstNameTextView.text = "Imię: Brak danych"
+                    lastNameTextView.text = "Nazwisko: Brak danych"
+                    emailTextView.text = "Email: Brak danych"
+                    birthDateTextView.text = "Data urodzenia: Brak danych"
+                    Toast.makeText(this@UserProfileActivity, "Wystąpił błąd podczas pobierania danych użytkownika", Toast.LENGTH_SHORT).show()
+                }
+            }
+            override fun onFailure(call: Call<UserDataResponse>, t: Throwable) {
+                Toast.makeText(this@UserProfileActivity, "Wystąpił błąd podczas pobierania danych użytkownika: " + t.message, Toast.LENGTH_SHORT).show()
+            }
+        })
+
+        val call2 = apiService.getSavingsGoal(authHeader,tokenRequest)
+
+        call2.enqueue(object : Callback<List<SavingsGoal>> {
+            override fun onResponse(
+                call: Call<List<SavingsGoal>>,
+                response: Response<List<SavingsGoal>>
+            ) {
+                if (response.isSuccessful) {
+                    val savingsGoalResponse = response.body()
+                    if (savingsGoalResponse != null) {
+                        savingsGoals.addAll(savingsGoalResponse)
+                        adapter.notifyDataSetChanged()
+                    }
+                }else{
+                    Toast.makeText(this@UserProfileActivity, "Wystąpił błąd podczas pobierania celu oszczędzania", Toast.LENGTH_SHORT).show()
+                }
+            }
+            override fun onFailure(call: Call<List<SavingsGoal>>, t: Throwable) {
+                Toast.makeText(this@UserProfileActivity, "Wystąpił błąd podczas pobierania  celu oszczędzania: " + t.message, Toast.LENGTH_SHORT).show()
+            }
+        })
+
 
         // Pasek nawigacyjny - obsługa ikon
         val homeIcon = findViewById<ImageView>(R.id.homeIcon)
@@ -109,6 +165,14 @@ class UserProfileActivity : AppCompatActivity() {
         assetsIcon.setOnClickListener{
             val intent=Intent(this,AssetsActivity::class.java)
             startActivity(intent)
+        }
+
+        resetPasswordButton.setOnClickListener {
+            showResetPasswordDialog()
+        }
+
+        addSavingsGoalButton.setOnClickListener{
+            addSavingsGoal(adapter)
         }
     }
 
@@ -143,13 +207,16 @@ class UserProfileActivity : AppCompatActivity() {
             newPasswordBuilder.setPositiveButton("Zmień") { _, _ ->
                 val currentPassword = currentPasswordInput.text.toString()
                 val newPassword = newPasswordInput.text.toString()
+                val passwordPattern = "^[a-zA-Z]{6,9}\\d$"
 
                 // Tutaj można dodać logikę do zmiany hasła na serwerze lub w lokalnym składowisku
-                if (currentPassword.isNotEmpty() && newPassword.isNotEmpty()) {
+                if (currentPassword.isNotEmpty() && newPassword.isNotEmpty() && Pattern.matches(passwordPattern, newPassword)){
                     val tokenManager = TokenManager(this)
                     if(tokenManager.refreshTokenIfNeeded()){
                         Toast.makeText(this, "Token odświeżony", Toast.LENGTH_SHORT).show()
                     }
+
+
 
                     val interceptor = HttpLoggingInterceptor()
                     interceptor.level = HttpLoggingInterceptor.Level.BODY
@@ -206,6 +273,7 @@ class UserProfileActivity : AppCompatActivity() {
     }
 
     private fun addSavingsGoal(adapter: SavingsGoalAdapter) {
+        val tokenManager = TokenManager(this)
         val builder = AlertDialog.Builder(this,R.style.AlertDialogTheme)
         builder.setTitle("Podaj cel oszczędzania")
 
@@ -239,14 +307,45 @@ class UserProfileActivity : AppCompatActivity() {
                     val newSavingsGoal = SavingsGoal(savingsGoalTopic, 0.0, savingsCosts.toDouble(), true)
                     savingsGoals.add(newSavingsGoal)
 
+                    val interceptor = HttpLoggingInterceptor()
+                    interceptor.level = HttpLoggingInterceptor.Level.BODY
+
+                    val client = OkHttpClient.Builder()
+                        .addInterceptor(interceptor)
+                        .build()
+
+                    val retrofit = Retrofit.Builder()
+                        .baseUrl(BASE_URL)
+                        .addConverterFactory(GsonConverterFactory.create())
+                        .client(client)
+                        .build()
+
+                    val authHeader = "Bearer " + tokenManager.getTokenAccess().toString()
+                    val apiService = retrofit.create(ApiService::class.java)
+
+                    val call = apiService.createSavingsGoal(authHeader,
+                        SavingsGoalRequest(tokenManager.getTokenAccess().toString(), savingsGoalTopic, savingsCosts.toDouble())
+                    )
+
+                    call.enqueue(object : Callback<ResponseBody> {
+                        override fun onResponse(
+                            call: Call<ResponseBody>,
+                            response: Response<ResponseBody>
+                        ) {
+                            if (response.isSuccessful) {
+                                Toast.makeText(this@UserProfileActivity, "Cel oszczędzania został dodany", Toast.LENGTH_SHORT).show()
+                            }else{
+                                Toast.makeText(this@UserProfileActivity, "Wystąpił błąd podczas dodawania celu oszczędzania", Toast.LENGTH_SHORT).show()
+                            }
+                        }
+                        override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
+                            Toast.makeText(this@UserProfileActivity, "Wystąpił błąd podczas dodawania celu oszczędzania: " + t.message, Toast.LENGTH_SHORT).show()
+                        }
+                    })
 
                     // Aktualizuj wartość postępu w mapie
                     adapter.updateProgress(savingsGoals.indexOf(newSavingsGoal), 0)
-
-                    Toast.makeText(this, "Ustalono cel oszczędzania", Toast.LENGTH_SHORT).show()
                     adapter.notifyDataSetChanged()
-                } else {
-                    Toast.makeText(this, "Błąd podczas ustalania celu oszczędzania.", Toast.LENGTH_SHORT).show()
                 }
             }
 

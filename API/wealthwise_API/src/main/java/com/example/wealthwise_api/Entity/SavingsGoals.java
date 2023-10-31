@@ -21,15 +21,32 @@ public class SavingsGoals {
     @JoinColumn(name = "idUser",nullable = false)
     private UserEntity userEntity;
 
-    public SavingsGoals(String name, double targetAmount, double currentAmount, Boolean status, UserEntity userEntity) {
+    public SavingsGoals() {
+    }
+
+    public SavingsGoals(String name, double targetAmount, double currentAmount, boolean status, UserEntity userEntity) {
         this.name = name;
         this.targetAmount = targetAmount;
         this.currentAmount = currentAmount;
         this.status = status;
         this.userEntity = userEntity;
+
     }
 
-    public SavingsGoals() {
+    public long getIdSavingsGoals() {
+        return idSavingsGoals;
+    }
+
+    public void setIdSavingsGoals(long idSavingsGoals) {
+        this.idSavingsGoals = idSavingsGoals;
+    }
+
+    public boolean isStatus() {
+        return status;
+    }
+
+    public void setStatus(boolean status) {
+        this.status = status;
     }
 
     public String getName() {

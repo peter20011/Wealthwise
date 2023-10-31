@@ -9,6 +9,7 @@ import android.view.animation.AnimationUtils
 import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import com.example.wealthwise.DataClass.CurrencyData
 import okhttp3.*
 import okhttp3.logging.HttpLoggingInterceptor
 import org.json.JSONArray
@@ -194,7 +195,6 @@ class AssetsActivity : AppCompatActivity() {
                 showValueInputDialog()
                 dialog.dismiss()
             } else {
-                // Inform the user that they must select a currency
                 Toast.makeText(this, "Proszę wybrać walutę", Toast.LENGTH_SHORT).show()
             }
         }
@@ -203,7 +203,7 @@ class AssetsActivity : AppCompatActivity() {
             dialog.dismiss()
         }
 
-        val dialog = builder.create() // Create the AlertDialog
+        val dialog = builder.create()
 
         dialog.show()
     }
@@ -412,16 +412,3 @@ class AssetsActivity : AppCompatActivity() {
 
 }
 
-
-data class CurrencyData(
-    val table: String,
-    val no: String,
-    val effectiveDate: String,
-    val rates: List<Rate>
-)
-
-data class Rate(
-    val currency: String,
-    val code: String,
-    val mid: Double
-)

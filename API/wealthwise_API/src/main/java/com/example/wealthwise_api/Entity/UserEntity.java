@@ -23,7 +23,7 @@ public class UserEntity  implements UserDetails {
     @Column(nullable = false)
     private String password;
     @Column(nullable = false)
-    private String username;
+    private String name;
     @Column(nullable = false)
     private String surname;
     @Column(nullable = false)
@@ -46,16 +46,16 @@ public class UserEntity  implements UserDetails {
         this.idUser = idUser;
         this.email = email;
         this.password = password;
-        this.username = username;
+        this.name = username;
         this.surname = surname;
         this.birthDay = birthDay;
         this.role = role;
     }
 
-    public UserEntity(String email, String password, String username, String surname, String birthDay, Role role) {
+    public UserEntity(String email, String password, String name, String surname, String birthDay, Role role) {
         this.email = email;
         this.password = password;
-        this.username = username;
+        this.name = name;
         this.surname = surname;
         this.birthDay = birthDay;
         this.role = role;
@@ -144,18 +144,22 @@ public class UserEntity  implements UserDetails {
     }
 
     public void setUsername(String username) {
-        this.username = username;
+        this.name = username;
+    }
+
+    public String getName() {
+        return name;
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof UserEntity that)) return false;
-        return getIdUser() == that.getIdUser() && Objects.equals(getEmail(), that.getEmail()) && Objects.equals(getPassword(), that.getPassword()) && Objects.equals(getUsername(), that.getUsername()) && Objects.equals(getSurname(), that.getSurname()) && Objects.equals(getBirthDay(), that.getBirthDay()) && getRole() == that.getRole();
+        return getIdUser() == that.getIdUser() && Objects.equals(getEmail(), that.getEmail()) && Objects.equals(getPassword(), that.getPassword()) && Objects.equals(getName(), that.getName()) && Objects.equals(getSurname(), that.getSurname()) && Objects.equals(getBirthDay(), that.getBirthDay()) && getRole() == that.getRole();
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getIdUser(), getEmail(), getPassword(), getUsername(), getSurname(), getBirthDay(), getRole());
+        return Objects.hash(getIdUser(), getEmail(), getPassword(), getName(), getSurname(), getBirthDay(), getRole());
     }
 }

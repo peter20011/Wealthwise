@@ -10,12 +10,23 @@ import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
+import com.example.wealthwise.DataClass.AddCashSavingsGoalRequest
 import com.example.wealthwise.DataClass.SavingsGoal
+import com.example.wealthwise.DataClass.SavingsGoalRequest
+import okhttp3.OkHttpClient
+import okhttp3.ResponseBody
+import okhttp3.logging.HttpLoggingInterceptor
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
 
 class SavingsGoalAdapter(private val savingsGoals: MutableList<SavingsGoal>) :
     RecyclerView.Adapter<SavingsGoalAdapter.SavingsGoalViewHolder>() {
 
     private val progressMap = mutableMapOf<Int, Int>()
+    private val BASE_URL = "http://10.0.2.2:8080"
 
     inner class SavingsGoalViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val titleTextView: TextView = itemView.findViewById(R.id.goalTitleTextView)
@@ -64,6 +75,7 @@ class SavingsGoalAdapter(private val savingsGoals: MutableList<SavingsGoal>) :
     }
 
     private fun showEditSavingsGoalDialog(position: Int, holder: SavingsGoalViewHolder) {
+        val tokenManager = TokenManager(holder.itemView.context)
         val savingsGoal = savingsGoals[position]
 
         val builder = AlertDialog.Builder(holder.itemView.context, R.style.AlertDialogTheme)
@@ -86,6 +98,42 @@ class SavingsGoalAdapter(private val savingsGoals: MutableList<SavingsGoal>) :
                 val percentProgress = (updatedCurrentAmount / updatedSavingsGoal.targetAmount * 100).toInt()
                 updateProgress(position, percentProgress)
                 holder.savingsProgressBar.progress = percentProgress
+
+                val interceptor = HttpLoggingInterceptor()
+                interceptor.level = HttpLoggingInterceptor.Level.BODY
+
+                val client = OkHttpClient.Builder()
+                    .addInterceptor(interceptor)
+                    .build()
+
+                val retrofit = Retrofit.Builder()
+                    .baseUrl(BASE_URL)
+                    .addConverterFactory(GsonConverterFactory.create())
+                    .client(client)
+                    .build()
+                val authHeader = "Bearer " + tokenManager.getTokenAccess().toString()
+                val apiService = retrofit.create(ApiService::class.java)
+
+                val addCashSavingsGoalRequest = AddCashSavingsGoalRequest(tokenManager.getTokenAccess().toString(), updatedSavingsGoal.title, updatedSavingsGoal.currentAmount)
+
+                val call = apiService.addCashSavingsGoal(authHeader, addCashSavingsGoalRequest)
+
+                call.enqueue(object : Callback<ResponseBody> {
+                    override fun onResponse(call: Call<ResponseBody>,
+                                            response: Response<ResponseBody>
+                    ) {
+                        if (response.isSuccessful) {
+                            Toast.makeText(holder.itemView.context, "Pomyślnie zwiększsono oszczędzone środki na dany cel", Toast.LENGTH_SHORT).show()
+                        } else {
+                            Toast.makeText(holder.itemView.context, "Nie udało się dodać oszczędności", Toast.LENGTH_SHORT).show()
+                        }
+                    }
+
+                    override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
+                        Toast.makeText(holder.itemView.context, "Nie udało się dodać oszczędności", Toast.LENGTH_SHORT).show()
+                    }
+                    })
+
 
             }
         }
