@@ -1,7 +1,11 @@
 package com.example.wealthwise
 
 import com.example.wealthwise.DataClass.AddCashSavingsGoalRequest
+import com.example.wealthwise.DataClass.AssetsRequest
+import com.example.wealthwise.DataClass.AssetsRequestDelete
+import com.example.wealthwise.DataClass.AssetsRequestListDelete
 import com.example.wealthwise.DataClass.ChangePassword
+import com.example.wealthwise.DataClass.CurrencyData
 import com.example.wealthwise.DataClass.RefreshToken
 import com.example.wealthwise.DataClass.RegistrationData
 import com.example.wealthwise.DataClass.SavingsGoal
@@ -11,6 +15,7 @@ import com.example.wealthwise.DataClass.UserDataResponse
 import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.http.Body
+import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.Header
 import retrofit2.http.POST
@@ -45,4 +50,14 @@ interface ApiService {
 
     @POST("/savingsGoal/getSavingsGoal")
     fun getSavingsGoal(@Header("Authorization") token: String, @Body tokenRequest: TokenRequest) : Call<List<SavingsGoal>>
+
+    @POST("/asset/addAsset")
+    fun addAsset(@Header("Authorization") token: String, @Body assetsRequest: AssetsRequest) : Call<ResponseBody>
+
+    @POST("/asset/getAsset")
+    fun getAsset(@Header("Authorization") token: String, @Body tokenRequest: TokenRequest) : Call<List<AssetsRequestDelete>>
+
+    @POST("/asset/deleteAsset")
+    fun deleteAsset(@Header("Authorization") token: String, @Body  assetsRequestListDelete: AssetsRequestListDelete) : Call<ResponseBody>
+
 }

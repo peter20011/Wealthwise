@@ -9,7 +9,11 @@ import android.view.animation.AnimationUtils
 import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import com.example.wealthwise.DataClass.AssetsRequest
+import com.example.wealthwise.DataClass.AssetsRequestDelete
+import com.example.wealthwise.DataClass.AssetsRequestListDelete
 import com.example.wealthwise.DataClass.CurrencyData
+import com.example.wealthwise.DataClass.TokenRequest
 import okhttp3.*
 import okhttp3.logging.HttpLoggingInterceptor
 import org.json.JSONArray
@@ -31,10 +35,12 @@ class AssetsActivity : AppCompatActivity() {
     private lateinit var currency2Rate: TextView
     private lateinit var currency3Rate: TextView
     private lateinit var currency4Rate: TextView
+    private val BASE_URL = "http://10.0.2.2:8080"
     private var selectedCurrency: String? = null
     private lateinit var assetsContainer : LinearLayout
     private val selectedAssets = mutableListOf<View>()
-
+    private var userAssets = mutableListOf<AssetsRequestDelete>()
+    private var userAssetsDelete = mutableListOf<AssetsRequestDelete>()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -53,9 +59,11 @@ class AssetsActivity : AppCompatActivity() {
             Toast.makeText(this, "Token odświeżony", Toast.LENGTH_SHORT).show()
         }
 
-
-
         setContentView(R.layout.activity_assets)
+
+        fetchCurrencyRates()
+
+        fetchUserAssets()
 
         val homeIcon = findViewById<ImageView>(R.id.homeIcon)
         val statisticIcon = findViewById<ImageView>(R.id.statisticIcon)
@@ -93,10 +101,9 @@ class AssetsActivity : AppCompatActivity() {
         currency3Rate = findViewById(R.id.currency3Rate)
         currency4Rate = findViewById(R.id.currency4Rate)
         assetsContainer =  findViewById(R.id.assetsContainer)
-        assetsContainer.visibility = View.GONE
+
 
         // Pobieranie kursów walut
-        fetchCurrencyRates()
 
         // Obsługa przycisku "Dodaj Aktywo"
         val addAssetButton = findViewById<Button>(R.id.addAssetButton)
@@ -116,7 +123,6 @@ class AssetsActivity : AppCompatActivity() {
         }
 
     }
-
     private fun fetchCurrencyRates() {
         val interceptor = HttpLoggingInterceptor()
         interceptor.level = HttpLoggingInterceptor.Level.BODY
@@ -161,14 +167,12 @@ class AssetsActivity : AppCompatActivity() {
             }
         })
     }
-
     private fun updateCurrencyViews(currencyRates: Map<String, Double>) {
         currency1Rate.text = formatCurrencyValue(currencyRates["USD"])
         currency2Rate.text = formatCurrencyValue(currencyRates["EUR"])
         currency3Rate.text = formatCurrencyValue(currencyRates["CHF"])
         currency4Rate.text = formatCurrencyValue(currencyRates["GBP"])
     }
-
     private fun formatCurrencyValue(value: Double?): String {
         return if (value != null) {
             String.format("%.2f", value)
@@ -176,7 +180,6 @@ class AssetsActivity : AppCompatActivity() {
             "Brak danych"
         }
     }
-
     private fun showCurrencyDialog() {
         val builder = AlertDialog.Builder(this, R.style.AlertDialogTheme)
         builder.setTitle("Dodaj Aktywo Typu Waluty")
@@ -207,8 +210,7 @@ class AssetsActivity : AppCompatActivity() {
 
         dialog.show()
     }
-
-    private fun showValueInputDialog() {
+    private fun  showValueInputDialog() {
         val valueBuilder = AlertDialog.Builder(this,R.style.AlertDialogTheme)
         valueBuilder.setTitle("Podaj Wartość")
 
@@ -226,8 +228,6 @@ class AssetsActivity : AppCompatActivity() {
             if(enteredValue.isNotEmpty()){
                 val value=enteredValue.toDouble()
                 if(value > 0){
-                    // Show an AlertDialog to inform about the currency and entered value
-                    assetsContainer.visibility = View.VISIBLE
                     showCurrencyAndValueAlert(selectedCurrency, enteredValue)
                 }else{
                     Toast.makeText(this, "Wartość musi być większa od zera", Toast.LENGTH_SHORT).show()
@@ -243,20 +243,54 @@ class AssetsActivity : AppCompatActivity() {
 
         valueBuilder.show()
     }
-
     private fun showCurrencyAndValueAlert(currency: String?, value: String) {
         val alertBuilder = AlertDialog.Builder(this,R.style.AlertDialogTheme)
+        val tokenManager = TokenManager(this)
         alertBuilder.setTitle("Dodano Aktywo")
         alertBuilder.setMessage("Wybrano walutę: $currency\n\nWartość: $value")
         alertBuilder.setPositiveButton("OK") { dialog, _ ->
-            // Handle the OK button click if needed
+
+            val interceptor = HttpLoggingInterceptor()
+            interceptor.level = HttpLoggingInterceptor.Level.BODY
+
+            val client = OkHttpClient.Builder()
+                .addInterceptor(interceptor)
+                .build()
+
+            val retrofit = Retrofit.Builder()
+                .baseUrl(BASE_URL)
+                .addConverterFactory(GsonConverterFactory.create())
+                .client(client)
+                .build()
+
+            val authHeader = "Bearer " + tokenManager.getTokenAccess().toString()
+            val apiService = retrofit.create(ApiService::class.java)
+
+            val assetsRequest = AssetsRequest(tokenManager.getTokenAccess().toString(),currency.toString(),"Waluta",value.toDouble())
+            val assetsRequestDelete = AssetsRequestDelete(currency.toString(),"Waluta",value.toDouble())
+            userAssets.add(assetsRequestDelete)
+            val call = apiService.addAsset(authHeader,assetsRequest)
+
+            call.enqueue(object : Callback<ResponseBody> {
+                override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
+                    if (response.isSuccessful) {
+                        Toast.makeText(this@AssetsActivity, "Dodano aktywo", Toast.LENGTH_SHORT).show()
+                    } else {
+                        Toast.makeText(this@AssetsActivity, "Błąd w dodawaniu aktywa", Toast.LENGTH_SHORT).show()
+                    }
+                }
+
+                override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
+                    Toast.makeText(this@AssetsActivity, "Błąd w dodawaniu aktywa", Toast.LENGTH_SHORT).show()
+                }
+            })
+
             addAssetToContainerWithAnimation(currency,value,"Waluta")
             dialog.dismiss()
         }
 
         alertBuilder.show()
     }
-
     private fun showStocksDialog() {
         val sharesBuilder = AlertDialog.Builder(this,R.style.AlertDialogTheme)
         sharesBuilder.setTitle("Podaj Wartość")
@@ -291,7 +325,6 @@ class AssetsActivity : AppCompatActivity() {
         }
         sharesBuilder.show()
     }
-
     private fun showBondsDialog() {
         val sharesBuilder = AlertDialog.Builder(this,R.style.AlertDialogTheme)
         sharesBuilder.setTitle("Podaj Wartość")
@@ -310,7 +343,6 @@ class AssetsActivity : AppCompatActivity() {
             if(enteredValue.isNotEmpty()){
                 val value = enteredValue.toDouble();
                 if(value > 0 ){
-                    // Show an AlertDialog to inform about the currency and entered value
                     showAssetAndValueAlert("Obligacje", enteredValue)
                 }else{
                     Toast.makeText(this, "Wartość musi być większa od zera", Toast.LENGTH_SHORT).show()
@@ -326,21 +358,56 @@ class AssetsActivity : AppCompatActivity() {
         }
         sharesBuilder.show()
     }
-
     private fun showAssetAndValueAlert(asset: String, value: String) {
         val alertBuilder = AlertDialog.Builder(this,R.style.AlertDialogTheme)
+        val tokenManager = TokenManager(this)
         alertBuilder.setTitle("Dodano Aktywo")
         alertBuilder.setMessage("Aktywo: $asset\nWaluta: PLN \nWartość: $value")
         alertBuilder.setPositiveButton("OK") { dialog, _ ->
-            // Handle the OK button click if needed
-            assetsContainer.visibility = View.VISIBLE
+
+            val interceptor = HttpLoggingInterceptor()
+            interceptor.level = HttpLoggingInterceptor.Level.BODY
+
+            val client = OkHttpClient.Builder()
+                .addInterceptor(interceptor)
+                .build()
+
+            val retrofit = Retrofit.Builder()
+                .baseUrl(BASE_URL)
+                .addConverterFactory(GsonConverterFactory.create())
+                .client(client)
+                .build()
+
+            val authHeader = "Bearer " + tokenManager.getTokenAccess().toString()
+            val apiService = retrofit.create(ApiService::class.java)
+
+            val assetsRequest = AssetsRequest(tokenManager.getTokenAccess().toString(),"PLN",asset,value.toDouble())
+            val assetsRequestDelete = AssetsRequestDelete("PLN",asset,value.toDouble())
+            userAssets.add(assetsRequestDelete)
+            val call = apiService.addAsset(authHeader,assetsRequest)
+
+            call.enqueue(object : Callback<ResponseBody> {
+                override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
+                    if (response.isSuccessful) {
+                        Toast.makeText(this@AssetsActivity, "Dodano aktywo", Toast.LENGTH_SHORT).show()
+                    } else {
+                       Toast.makeText(this@AssetsActivity, "Błąd w dodawaniu aktywa", Toast.LENGTH_SHORT).show()
+                    }
+                }
+
+                override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
+                    Toast.makeText(this@AssetsActivity, "Błąd w dodawaniu aktywa", Toast.LENGTH_SHORT).show()
+                }
+            })
+
+
+
             addAssetToContainerWithAnimation("PLN",value,asset)
             dialog.dismiss()
         }
 
         alertBuilder.show()
     }
-
     private fun toggleSelection(assetView: View) {
         if (selectedAssets.contains(assetView)) {
             selectedAssets.remove(assetView)
@@ -350,7 +417,6 @@ class AssetsActivity : AppCompatActivity() {
             assetView.setBackgroundResource(R.drawable.selected_background) // Dodanie zaznaczenia
         }
     }
-
     private fun addAssetToContainerWithAnimation(currency: String?, value: String, assetType: String) {
         val assetsContainer = findViewById<LinearLayout>(R.id.assetsContainer)
         val assetView = layoutInflater.inflate(R.layout.asset_item, null)
@@ -373,8 +439,8 @@ class AssetsActivity : AppCompatActivity() {
 
         assetsContainer.addView(assetView)
     }
-
     private fun deleteSelectedAssets() {
+        val tokenManager = TokenManager(this)
         if (selectedAssets.isEmpty()) {
             Toast.makeText(this, "Wybierz aktywo do usunięcia.", Toast.LENGTH_SHORT).show()
             return
@@ -394,10 +460,47 @@ class AssetsActivity : AppCompatActivity() {
                 assetView.postDelayed({
                     assetsContainer.removeView(assetView)
                 }, animationDuration)
-            }
 
+               val assetsRequestDelete = AssetsRequestDelete(assetView.findViewById<TextView>(R.id.assetCurrencyTextView).text.toString(),assetView.findViewById<TextView>(R.id.assetNameTextView).text.toString(),assetView.findViewById<TextView>(R.id.assetValueTextView).text.toString().toDouble())
+                println(assetsRequestDelete.name)
+                userAssetsDelete.add(assetsRequestDelete)
+            }
             selectedAssets.clear()
-            Toast.makeText(this, "Usunięto zaznaczone aktywa.", Toast.LENGTH_SHORT).show()
+
+            val interceptor = HttpLoggingInterceptor()
+            interceptor.level = HttpLoggingInterceptor.Level.BODY
+
+            val client = OkHttpClient.Builder()
+                .addInterceptor(interceptor)
+                .build()
+
+            val retrofit = Retrofit.Builder()
+                .baseUrl(BASE_URL)
+                .addConverterFactory(GsonConverterFactory.create())
+                .client(client)
+                .build()
+
+            val authHeader = "Bearer " + tokenManager.getTokenAccess().toString()
+            val apiService = retrofit.create(ApiService::class.java)
+
+            val assetsRequestListDelete =
+                AssetsRequestListDelete(tokenManager.getTokenAccess().toString(),userAssetsDelete)
+
+            val call = apiService.deleteAsset(authHeader,assetsRequestListDelete)
+
+            call.enqueue(object : Callback<ResponseBody> {
+                override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
+                    if (response.isSuccessful) {
+                        Toast.makeText(this@AssetsActivity, "Usunięto zaznaczone aktywa.", Toast.LENGTH_SHORT).show()
+                    } else {
+                        Toast.makeText(this@AssetsActivity, "Błąd w usuwaniu aktywa", Toast.LENGTH_SHORT).show()
+                    }
+                }
+
+                override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
+                    Toast.makeText(this@AssetsActivity, "Błąd w usuwaniu aktywa", Toast.LENGTH_SHORT).show()
+                }
+            })
             dialog.dismiss()
         }
 
@@ -408,7 +511,51 @@ class AssetsActivity : AppCompatActivity() {
         val dialog = dialogBuilder.create()
         dialog.show()
     }
+    private fun fetchUserAssets(){
+        val tokenManager= TokenManager(this)
 
+        val interceptor = HttpLoggingInterceptor()
+        interceptor.level = HttpLoggingInterceptor.Level.BODY
+
+        val client = OkHttpClient.Builder()
+            .addInterceptor(interceptor)
+            .build()
+
+        val retrofit = Retrofit.Builder()
+            .baseUrl(BASE_URL)
+            .addConverterFactory(GsonConverterFactory.create())
+            .client(client)
+            .build()
+
+        val authHeader = "Bearer " + tokenManager.getTokenAccess().toString()
+        val apiService = retrofit.create(ApiService::class.java)
+
+        val tokenRequest = TokenRequest(tokenManager.getTokenAccess().toString())
+
+        val call = apiService.getAsset(authHeader,tokenRequest)
+
+        call.enqueue(object : Callback<List<AssetsRequestDelete>> {
+            override fun onResponse(call: Call<List<AssetsRequestDelete>>, response: Response<List<AssetsRequestDelete>>) {
+                if (response.isSuccessful) {
+                    userAssets = response.body() as MutableList<AssetsRequestDelete>
+                    if (userAssets != null) {
+                        for (asset in userAssets) {
+                            addAssetToContainerWithAnimation(asset.currency,asset.value.toString(),asset.name)
+                        }
+                    } else {
+                        println("Brak danych o aktywach.")
+                    }
+                } else {
+                    println("Błąd w pobieraniu danych.")
+                }
+            }
+
+            override fun onFailure(call: Call<List<AssetsRequestDelete>>, t: Throwable) {
+                println("Wystąpił błąd podczas pobierania danych: ${t.message}")
+            }
+        })
+
+    }
 
 }
 
