@@ -4,7 +4,9 @@ import com.example.wealthwise_api.Entity.AccessToken;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
 
+@Repository
 public interface JWTokenAccessRepository extends JpaRepository<AccessToken, Long>{
     AccessToken findByToken(String token);
 

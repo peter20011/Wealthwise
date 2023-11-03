@@ -7,11 +7,11 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository("assetJPA")
-public class AssetJPADataAccessService implements AssetsDAO{
+public class AssetsJPADataAccessService implements AssetsDAO{
 
     private final AssetsRepository assetsRepository;
 
-    public AssetJPADataAccessService(AssetsRepository assetsRepository) {
+    public AssetsJPADataAccessService(AssetsRepository assetsRepository) {
         this.assetsRepository = assetsRepository;
     }
 

@@ -52,7 +52,7 @@ class DashboardActivity : AppCompatActivity() {
         "Chemia gospodarcza",
         "Inne wydatki",
         "Rachunki",
-        "Ubranie",
+        "Ubrania",
         "Relaks",
         "Transport",
         "Mieszkanie"

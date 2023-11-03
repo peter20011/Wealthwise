@@ -3,6 +3,7 @@ package com.example.wealthwise_api.Entity;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
+import java.util.Date;
 
 @Entity
 @Table(name = "expenses")
@@ -15,7 +16,7 @@ public class Expenses {
     private double amount;
 
     @Column(nullable = false)
-    private LocalDate createdDate;
+    private Date createdDate;
 
     @Column(nullable = false)
     private String currency;
@@ -28,7 +29,7 @@ public class Expenses {
     @JoinColumn(name = "idCategory",nullable = false)
     private Categories category;
 
-    public Expenses(double amount, LocalDate createdDate, String currency, UserEntity userEntity, Categories category) {
+    public Expenses(double amount, Date createdDate, String currency, UserEntity userEntity, Categories category) {
         this.amount = amount;
         this.createdDate = createdDate;
         this.currency = currency;
@@ -55,11 +56,11 @@ public class Expenses {
         this.amount = amount;
     }
 
-    public LocalDate getCreatedDate() {
+    public Date getCreatedDate() {
         return createdDate;
     }
 
-    public void setCreatedDate(LocalDate createdDate) {
+    public void setCreatedDate(Date createdDate) {
         this.createdDate = createdDate;
     }
 
