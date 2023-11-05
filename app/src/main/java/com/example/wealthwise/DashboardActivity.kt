@@ -14,11 +14,18 @@ import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.example.wealthwise.DataClass.Expense
+import com.example.wealthwise.DataClass.ExpenseRequest
+import com.example.wealthwise.DataClass.ExpenseResponse
+import com.example.wealthwise.DataClass.IncomeRequest
+import com.example.wealthwise.DataClass.IncomeResponse
+import com.example.wealthwise.DataClass.TokenRequest
+import com.example.wealthwise.DataClass.UserDataResponse
 import com.github.mikephil.charting.charts.PieChart
 import com.github.mikephil.charting.components.Legend
 import com.github.mikephil.charting.data.PieData
 import com.github.mikephil.charting.data.PieDataSet
 import com.github.mikephil.charting.data.PieEntry
+import com.github.mikephil.charting.formatter.PercentFormatter
 import okhttp3.OkHttpClient
 import okhttp3.ResponseBody
 import okhttp3.logging.HttpLoggingInterceptor
@@ -55,7 +62,8 @@ class DashboardActivity : AppCompatActivity() {
         "Ubrania",
         "Relaks",
         "Transport",
-        "Mieszkanie"
+        "Mieszkanie",
+        "Zdrowie"
     )
     private var entries = ArrayList<PieEntry>()
     private var dataSet = PieDataSet(entries, "")
@@ -165,9 +173,50 @@ class DashboardActivity : AppCompatActivity() {
 
         }
 
-        // Ustawienie tekstu powitania
-        val username = "John"
-        welcomeText.text = "Witaj, $username"
+        val interceptor = HttpLoggingInterceptor()
+        interceptor.level = HttpLoggingInterceptor.Level.BODY
+
+        val client = OkHttpClient.Builder()
+            .addInterceptor(interceptor)
+            .build()
+
+        val retrofit = Retrofit.Builder()
+            .baseUrl(BASE_URL)
+            .addConverterFactory(GsonConverterFactory.create())
+            .client(client)
+            .build()
+
+        val authHeader = "Bearer " + tokenManager.getTokenAccess().toString()
+        val apiService = retrofit.create(ApiService::class.java)
+
+        val tokenRequest = TokenRequest(tokenManager.getTokenAccess().toString())
+
+        val call = apiService.getUserData(authHeader,tokenRequest)
+
+        call.enqueue(object : Callback<UserDataResponse> {
+            override fun onResponse(
+                call: Call<UserDataResponse>,
+                response: Response<UserDataResponse>
+            ) {
+                if (response.isSuccessful) {
+                    val userDataResponse = response.body()
+                    welcomeText.text = "Witaj " + userDataResponse?.name
+                }else{
+                    welcomeText.text ="Witaj: Brak danych"
+                    Toast.makeText(this@DashboardActivity, "Wystąpił błąd podczas pobierania danych użytkownika", Toast.LENGTH_SHORT).show()
+                }
+            }
+            override fun onFailure(call: Call<UserDataResponse>, t: Throwable) {
+                Toast.makeText(this@DashboardActivity, "Wystąpił błąd podczas pobierania danych użytkownika: " + t.message, Toast.LENGTH_SHORT).show()
+            }
+        })
+
+        updateIncome()
+        getExpenseList()
+
+        if(expensesList.isNotEmpty()) {
+            expensesListView.adapter
+        }
 
         if(expensesList.isEmpty()){
             lastSpendVisibility.visibility = View.GONE
@@ -184,35 +233,86 @@ class DashboardActivity : AppCompatActivity() {
         // Obsługa przycisku "Dochód"
         incomeButton.setOnClickListener {
             // Wyświetl dymek z miejscem do wprowadzenia dochodu
-            val builder = AlertDialog.Builder(this, R.style.AlertDialogTheme)
-            builder.setTitle("Podaj dochód")
+          if(totalIncome == 0.0) {
 
-            val input = EditText(this)
-            input.inputType = InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_DECIMAL
-            input.setBackgroundResource(R.drawable.blue_border) // Dodaj obramowanie
-            input.setTextColor(resources.getColor(android.R.color.black))
-            builder.setView(input)
+              val builder = AlertDialog.Builder(this, R.style.AlertDialogTheme)
+              builder.setTitle("Podaj dochód")
 
-            builder.setPositiveButton("OK") { dialog, _ ->
-                val income = input.text.toString()
-                if(income.isNotEmpty() && income.toDouble() != 0.00){
-                    // Tutaj można dodać kod do obsługi wprowadzonego dochodu
-                    // np. zaktualizować wykres lub listę
-                    totalIncome=income.toDouble()
-                    expenseButton.visibility = View.VISIBLE
-                    pieChart.visibility = View.VISIBLE
-                    categorySpinner.visibility = View.VISIBLE
-                    lackOfData.visibility= View.GONE
-                    setUpDiagram()
-                }else{
-                    Toast.makeText(this, "Wprowadź poprawną wartość dochodu (niezerową).", Toast.LENGTH_SHORT).show()
-                }
+              val input = EditText(this)
+              input.inputType = InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_DECIMAL
+              input.setBackgroundResource(R.drawable.blue_border) // Dodaj obramowanie
+              input.setTextColor(resources.getColor(android.R.color.black))
+              builder.setView(input)
 
-                dialog.dismiss()
-            }
+              builder.setPositiveButton("OK") { dialog, _ ->
+                  val income = input.text.toString()
+                  if (income.isNotEmpty() && income.toDouble() != 0.00) {
+                      // Tutaj można dodać kod do obsługi wprowadzonego dochodu
+                      // np. zaktualizować wykres lub listę
+                      totalIncome = income.toDouble()
+                      expenseButton.visibility = View.VISIBLE
+                      pieChart.visibility = View.VISIBLE
+                      categorySpinner.visibility = View.VISIBLE
+                      lackOfData.visibility = View.GONE
+                      setUpDiagram()
 
-            builder.setNegativeButton("Anuluj") { dialog, _ -> dialog.cancel() }
-            builder.show()
+                      val interceptor = HttpLoggingInterceptor()
+                      interceptor.level = HttpLoggingInterceptor.Level.BODY
+
+                      val client = OkHttpClient.Builder()
+                          .addInterceptor(interceptor)
+                          .build()
+
+                      val retrofit = Retrofit.Builder()
+                          .baseUrl(BASE_URL)
+                          .addConverterFactory(GsonConverterFactory.create())
+                          .client(client)
+                          .build()
+
+                      val authHeader = "Bearer " + tokenManager.getTokenAccess().toString()
+                      val apiService = retrofit.create(ApiService::class.java)
+
+                      val incomeRequest =
+                          IncomeRequest(tokenManager.getTokenAccess().toString(), income.toDouble())
+
+                      val call = apiService.addIncome(authHeader, incomeRequest)
+
+                      call.enqueue(object : Callback<ResponseBody> {
+                          override fun onResponse(
+                              call: Call<ResponseBody>,
+                              response: Response<ResponseBody>
+                          ) {
+                              if (response.isSuccessful) {
+                                  // Pomyślna odpowiedź
+                                  Toast.makeText(
+                                      context,
+                                      "Dochód dodany pomyślnie",
+                                      Toast.LENGTH_SHORT
+                                  ).show()
+                              }
+                          }
+
+                          override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
+                          }
+                      })
+
+
+                  } else {
+                      Toast.makeText(
+                          this,
+                          "Wprowadź poprawną wartość dochodu (niezerową).",
+                          Toast.LENGTH_SHORT
+                      ).show()
+                  }
+
+                  dialog.dismiss()
+              }
+
+              builder.setNegativeButton("Anuluj") { dialog, _ -> dialog.cancel() }
+              builder.show()
+          }else{
+              Toast.makeText(this, "Dochód został już wprowadzony", Toast.LENGTH_SHORT).show()
+          }
         }
 
         // Obsługa przycisku "Expense"
@@ -246,7 +346,42 @@ class DashboardActivity : AppCompatActivity() {
                             if(selectedCategoryIndex != -1 && (totalIncome * freeFounds/100.0)>=enteredAmount.toFloat()){
                                 lastSpendVisibility.visibility = View.VISIBLE
                                 lastSpendVisibilityFrame.visibility = View.VISIBLE
-                                addExpense(selectedCategoryIndex,enteredAmount.toFloat())
+
+                                val interceptor = HttpLoggingInterceptor()
+                                interceptor.level = HttpLoggingInterceptor.Level.BODY
+
+                                val client = OkHttpClient.Builder()
+                                    .addInterceptor(interceptor)
+                                    .build()
+
+                                val retrofit = Retrofit.Builder()
+                                    .baseUrl(BASE_URL)
+                                    .addConverterFactory(GsonConverterFactory.create())
+                                    .client(client)
+                                    .build()
+
+                                val authHeader = "Bearer " + tokenManager.getTokenAccess().toString()
+                                val apiService = retrofit.create(ApiService::class.java)
+
+                                val expenseRequest = ExpenseRequest(tokenManager.getTokenAccess().toString(),categories[selectedCategoryIndex],enteredAmount.toDouble())
+
+                                val call = apiService.saveExpense(authHeader,expenseRequest)
+
+                                call.enqueue(object : Callback<ResponseBody> {
+                                    override fun onResponse(
+                                        call: Call<ResponseBody>,
+                                        response: Response<ResponseBody>
+                                    ) {
+                                        if (response.isSuccessful) {
+                                            // Pomyślna odpowiedź
+                                            addExpense(selectedCategoryIndex,enteredAmount.toFloat())
+                                            Toast.makeText(context,"Wydatek dodany pomyślnie",Toast.LENGTH_SHORT).show()
+                                        }
+                                    }
+                                    override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
+                                    }
+                                })
+
                             }else{
                                 Toast.makeText(this, "Nie masz wystarczających środków na koncie.", Toast.LENGTH_SHORT).show()
                             }
@@ -285,7 +420,7 @@ class DashboardActivity : AppCompatActivity() {
             // Aktualizacja widoku listy
             (expensesListView.adapter as ExpenseAdapter).notifyDataSetChanged()
 
-            // Usuń ostatni element z listy (jeśli jest więcej niż 5 elementów)
+//             Usuń ostatni element z listy (jeśli jest więcej niż 5 elementów)
             if (expensesList.size > 5) {
                 expensesList.removeAt(expensesList.size - 1)
             }
@@ -302,6 +437,7 @@ class DashboardActivity : AppCompatActivity() {
         entries.add(PieEntry(0f,"Relaks"))
         entries.add(PieEntry(0f,"Transport"))
         entries.add(PieEntry(0f,"Mieszkanie"))
+        entries.add(PieEntry(0f,"Zdrowie"))
 
 
         dataSet.colors = ArrayList<Int>()
@@ -314,6 +450,7 @@ class DashboardActivity : AppCompatActivity() {
         dataSet.colors.add(resources.getColor(R.color.light_orange))
         dataSet.colors.add(resources.getColor(R.color.light_red))
         dataSet.colors.add(resources.getColor(R.color.light_yellow))
+        dataSet.colors.add(resources.getColor(R.color.colorAccent))
         dataSet.setDrawValues(false)
 
         dataSet.valueTextSize = 18f
@@ -352,12 +489,109 @@ class DashboardActivity : AppCompatActivity() {
         dataSet.colors.add(resources.getColor(R.color.light_orange))
         dataSet.colors.add(resources.getColor(R.color.light_red))
         dataSet.colors.add(resources.getColor(R.color.light_yellow))
+        dataSet.colors.add(resources.getColor(R.color.colorAccent))
         dataSet.setDrawValues(false)
 
         val data = PieData(dataSet)
         pieChart.data = data
         pieChart.notifyDataSetChanged() // Powiadom o zmianie danych w wykresie
         pieChart.invalidate() // Przerysuj wykres
+    }
+
+    private fun updateIncome(){
+        val tokenManager = TokenManager(this)
+
+        val interceptor = HttpLoggingInterceptor()
+        interceptor.level = HttpLoggingInterceptor.Level.BODY
+
+        val client = OkHttpClient.Builder()
+            .addInterceptor(interceptor)
+            .build()
+
+        val retrofit = Retrofit.Builder()
+            .baseUrl(BASE_URL)
+            .addConverterFactory(GsonConverterFactory.create())
+            .client(client)
+            .build()
+
+        val authHeader = "Bearer " + tokenManager.getTokenAccess().toString()
+        val apiService = retrofit.create(ApiService::class.java)
+
+        val tokenRequest = TokenRequest(tokenManager.getTokenAccess().toString())
+
+        val call = apiService.getIncome(authHeader,tokenRequest)
+
+        call.enqueue(object : Callback<IncomeResponse> {
+            override fun onResponse(
+                call: Call<IncomeResponse>,
+                response: Response<IncomeResponse>
+            ) {
+                if (response.isSuccessful) {
+                    val incomeResponse = response.body()
+                    if(incomeResponse?.value != null && incomeResponse.value > 0.0 ){
+                        totalIncome = incomeResponse?.value!!
+                        expenseButton.visibility = View.VISIBLE
+                        pieChart.visibility = View.VISIBLE
+                        categorySpinner.visibility = View.VISIBLE
+                        lackOfData.visibility= View.GONE
+                        setUpDiagram()}
+                    else{
+                        totalIncome = incomeResponse?.value!!
+                    }
+                }else{
+                    Toast.makeText(this@DashboardActivity, "Wystąpił błąd podczas pobierania danych użytkownika", Toast.LENGTH_SHORT).show()
+                }
+            }
+            override fun onFailure(call: Call<IncomeResponse>, t: Throwable) {
+                Toast.makeText(this@DashboardActivity, "Wystąpił błąd podczas pobierania danych użytkownika: " + t.message, Toast.LENGTH_SHORT).show()
+            }
+        })
+    }
+
+    private fun getExpenseList(){
+        val tokenManager = TokenManager(this)
+        val interceptor = HttpLoggingInterceptor()
+        interceptor.level = HttpLoggingInterceptor.Level.BODY
+
+        val client = OkHttpClient.Builder()
+            .addInterceptor(interceptor)
+            .build()
+
+        val retrofit = Retrofit.Builder()
+            .baseUrl(BASE_URL)
+            .addConverterFactory(GsonConverterFactory.create())
+            .client(client)
+            .build()
+
+        val authHeader = "Bearer " + tokenManager.getTokenAccess().toString()
+        val apiService = retrofit.create(ApiService::class.java)
+
+        val tokenRequest = TokenRequest(tokenManager.getTokenAccess().toString())
+
+        val call = apiService.getExpense(authHeader,tokenRequest)
+
+        call.enqueue(object : Callback<List<ExpenseResponse>> {
+            override fun onResponse(
+                call: Call<List<ExpenseResponse>>,
+                response: Response<List<ExpenseResponse>>
+            ) {
+                if (response.isSuccessful) {
+                    val expenseResponse = response.body()
+                    if(expenseResponse != null){
+                        for (expense in expenseResponse){
+                            addExpense(expense.category_id-1,expense.value.toFloat())
+                        }
+                        lastSpendVisibility.visibility = View.VISIBLE
+                        lastSpendVisibilityFrame.visibility = View.VISIBLE
+                    }
+                }else{
+                    Toast.makeText(this@DashboardActivity, "Wystąpił błąd podczas pobierania wydatków użytkownika", Toast.LENGTH_SHORT).show()
+                }
+            }
+            override fun onFailure(call: Call<List<ExpenseResponse>>, t: Throwable) {
+                Toast.makeText(this@DashboardActivity, "Wystąpił błąd podczas pobierania wydatków użytkownika: " + t.message, Toast.LENGTH_SHORT).show()
+            }
+        })
     }
 
     class ExpenseAdapter(private val context: Context, private val expenses: List<Expense>) :

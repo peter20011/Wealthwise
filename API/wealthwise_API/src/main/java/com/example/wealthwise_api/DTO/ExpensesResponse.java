@@ -1,20 +1,20 @@
 package com.example.wealthwise_api.DTO;
 
 public class ExpensesResponse {
-    private String category;
+    private long category_id;
     private double value;
 
-    public ExpensesResponse(String category, double value) {
-        this.category = category;
+    public ExpensesResponse(long category_id, double value) {
+        this.category_id = category_id;
         this.value = value;
     }
 
-    public String getCategory() {
-        return category;
+    public long getCategory_id() {
+        return category_id;
     }
 
-    public void setCategory(String category) {
-        this.category = category;
+    public void setCategory_id(long category_id) {
+        this.category_id = category_id;
     }
 
     public double getValue() {

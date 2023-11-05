@@ -1,6 +1,6 @@
 package com.example.wealthwise_api.Repository;
 
-import com.example.wealthwise_api.DTO.ExpensesResponse;
+
 import com.example.wealthwise_api.Entity.Expenses;
 import jakarta.persistence.Tuple;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -35,5 +35,15 @@ public interface ExpensesRepository extends JpaRepository<Expenses,Long> {
 
     @Query(value = "SELECT COALESCE(SUM(e.amount), 0) FROM Expenses e WHERE e.userEntity.idUser = :userId AND DATE_TRUNC('month', e.createdDate) = DATE_TRUNC('month', CURRENT_DATE)")
     double getSumOfExpensesByUserId(@Param("userId") Long userId);
+
+
+    @Query(nativeQuery = true,value="SELECT to_char(i.created_date, 'Month') AS months,\n" +
+            "    i.value AS totalIncome,\n" +
+            "    SUM(e.amount) AS totalExpenses\n" +
+            "FROM Incomes i\n" +
+            "LEFT JOIN Expenses e ON i.id_user = e.id_user\n" +
+            "WHERE i.id_user = :userId AND EXTRACT(YEAR FROM i.created_date) = EXTRACT(YEAR FROM CURRENT_DATE)\n" +
+            "GROUP BY months,totalIncome")
+    List<Tuple> getMonthlySummary(@Param("userId") Long userId);
 
 }

@@ -14,7 +14,7 @@ import java.util.List;
 @RequestMapping("/savingsGoal")
 public class SavingsGoalController {
 
-    private SavingsGoalService savingsGoalService;
+    private final SavingsGoalService savingsGoalService;
 
     public SavingsGoalController(SavingsGoalService savingsGoalService) {
         this.savingsGoalService = savingsGoalService;

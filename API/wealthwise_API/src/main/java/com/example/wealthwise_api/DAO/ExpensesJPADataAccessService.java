@@ -1,6 +1,7 @@
 package com.example.wealthwise_api.DAO;
 
 import com.example.wealthwise_api.DTO.ExpensesResponse;
+import com.example.wealthwise_api.DTO.MonthlySummaryResponse;
 import com.example.wealthwise_api.Entity.Expenses;
 import com.example.wealthwise_api.Repository.ExpensesRepository;
 import jakarta.persistence.Tuple;
@@ -40,5 +41,10 @@ public class ExpensesJPADataAccessService implements ExpensesDAO{
     @Override
     public double getSumOfExpensesByUserId(Long userId) {
         return expensesRepository.getSumOfExpensesByUserId(userId);
+    }
+
+    @Override
+    public List<Tuple> getMonthlySummary(Long userId) {
+        return expensesRepository.getMonthlySummary(userId);
     }
 }

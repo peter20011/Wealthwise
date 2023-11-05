@@ -7,6 +7,8 @@ import android.os.Bundle
 import android.widget.ImageView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.example.wealthwise.DataClass.StatisticResponse
+import com.example.wealthwise.DataClass.TokenRequest
 import com.github.mikephil.charting.charts.BarChart
 import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.components.YAxis
@@ -14,8 +16,19 @@ import com.github.mikephil.charting.data.BarData
 import com.github.mikephil.charting.data.BarDataSet
 import com.github.mikephil.charting.data.BarEntry
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
+import okhttp3.OkHttpClient
+import okhttp3.logging.HttpLoggingInterceptor
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
 
 class StatisticActivity : AppCompatActivity() {
+
+    private lateinit var listOfMonthlyExpenses : List<StatisticResponse>
+    private val BASE_URL = "http://10.0.2.2:8080"
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -60,6 +73,9 @@ class StatisticActivity : AppCompatActivity() {
             val intent=Intent(this,AssetsActivity::class.java)
             startActivity(intent)
         }
+
+        getData()
+
 
         // Pobierz wykresy dla poszczególnych miesięcy
         val chartJanuary: BarChart = findViewById(R.id.chartJanuary)
@@ -113,6 +129,8 @@ class StatisticActivity : AppCompatActivity() {
         return entries
     }
 
+
+
     private fun setBarChartData(chart: BarChart, data: List<BarEntry>, monthLabel: String) {
         val dataSet = BarDataSet(data, monthLabel)
         dataSet.colors = listOf(Color.GRAY, Color.BLUE) // Kolory dla wydatków i przychodów
@@ -150,5 +168,46 @@ class StatisticActivity : AppCompatActivity() {
 
         // Odśwież wykres
         chart.invalidate()
+    }
+
+    private fun getData(){
+        val tokenManager = TokenManager(this)
+        val interceptor = HttpLoggingInterceptor()
+        interceptor.level = HttpLoggingInterceptor.Level.BODY
+
+        val client = OkHttpClient.Builder()
+            .addInterceptor(interceptor)
+            .build()
+
+        val retrofit = Retrofit.Builder()
+            .baseUrl(BASE_URL)
+            .addConverterFactory(GsonConverterFactory.create())
+            .client(client)
+            .build()
+
+        val authHeader = "Bearer " + tokenManager.getTokenAccess().toString()
+        val apiService = retrofit.create(ApiService::class.java)
+
+        val tokenRequest = TokenRequest(tokenManager.getTokenAccess().toString())
+
+        val call = apiService.getMonthlyExpenseAndIncome(authHeader, tokenRequest)
+
+        call.enqueue(object : Callback<List<StatisticResponse>> {
+            override fun onResponse(
+                call: Call<List<StatisticResponse>>,
+                response: Response<List<StatisticResponse>>
+            ) {
+                if (response.isSuccessful) {
+                    val statisticResponse = response.body()
+                    if (statisticResponse != null) {
+                        listOfMonthlyExpenses = statisticResponse
+                    }
+                }
+            }
+
+            override fun onFailure(call: Call<List<StatisticResponse>>, t: Throwable) {
+                Toast.makeText(this@StatisticActivity, "Błąd pobierania danych", Toast.LENGTH_SHORT).show()
+            }
+        })
     }
 }

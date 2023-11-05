@@ -6,10 +6,15 @@ import com.example.wealthwise.DataClass.AssetsRequestDelete
 import com.example.wealthwise.DataClass.AssetsRequestListDelete
 import com.example.wealthwise.DataClass.ChangePassword
 import com.example.wealthwise.DataClass.CurrencyData
+import com.example.wealthwise.DataClass.ExpenseRequest
+import com.example.wealthwise.DataClass.ExpenseResponse
+import com.example.wealthwise.DataClass.IncomeRequest
+import com.example.wealthwise.DataClass.IncomeResponse
 import com.example.wealthwise.DataClass.RefreshToken
 import com.example.wealthwise.DataClass.RegistrationData
 import com.example.wealthwise.DataClass.SavingsGoal
 import com.example.wealthwise.DataClass.SavingsGoalRequest
+import com.example.wealthwise.DataClass.StatisticResponse
 import com.example.wealthwise.DataClass.TokenRequest
 import com.example.wealthwise.DataClass.UserDataResponse
 import okhttp3.ResponseBody
@@ -59,5 +64,20 @@ interface ApiService {
 
     @POST("/asset/deleteAsset")
     fun deleteAsset(@Header("Authorization") token: String, @Body  assetsRequestListDelete: AssetsRequestListDelete) : Call<ResponseBody>
+
+    @POST("/incomes/getIncome")
+    fun getIncome(@Header("Authorization") token: String, @Body tokenRequest: TokenRequest) : Call<IncomeResponse>
+
+    @POST("/incomes/addIncome")
+    fun addIncome(@Header("Authorization") token: String, @Body incomeRequest: IncomeRequest) : Call<ResponseBody>
+
+    @POST("/expenses/saveExpense")
+    fun saveExpense(@Header("Authorization") token: String, @Body expenseRequest: ExpenseRequest) : Call<ResponseBody>
+
+    @POST("/expenses/getExpense")
+    fun getExpense(@Header("Authorization") token: String, @Body tokenRequest: TokenRequest) : Call<List<ExpenseResponse>>
+
+    @POST("/expenses/getMonthlyExpenseAndIncome")
+    fun getMonthlyExpenseAndIncome(@Header("Authorization") token: String, @Body tokenRequest: TokenRequest) : Call<List<StatisticResponse>>
 
 }

@@ -20,14 +20,15 @@ public class CategoriesConfig {
             Categories  categories1 = new Categories("Chemia gospodarcza");
             Categories  categories2 = new Categories("Inne wydatki");
             Categories  categories3 = new Categories("Rachunki");
-            Categories  categories4 = new Categories("Transport");
             Categories  categories5 = new Categories("Ubrania");
             Categories  categories6 = new Categories("Relaks");
+            Categories  categories4 = new Categories("Transport");
             Categories  categories7 = new Categories("Mieszkanie");
+            Categories categories8 = new Categories("Zdrowie");
 
             repository.saveAll(
                     List.of(categories, categories1, categories2, categories3,
-                            categories4, categories5, categories6, categories7));
+                            categories5, categories6, categories4, categories7,categories8));
         };
     }
 }

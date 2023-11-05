@@ -33,4 +33,10 @@ public class ExpensesController {
     public ResponseEntity<?> getExpensesForEachCategoryByMonth(@RequestBody TokenRequest tokenRequest){
         return expensesService.getExpensesForEachCategoryByMonth(tokenRequest);
     }
+
+    @PostMapping(value = "/getMonthlyExpenseAndIncome",produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> getMonthlyExpenseAndIncome(@RequestBody TokenRequest tokenRequest){
+        return expensesService.getMonthlyIncome(tokenRequest);
+    }
+
 }
