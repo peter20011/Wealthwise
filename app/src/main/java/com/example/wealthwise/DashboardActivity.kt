@@ -34,6 +34,7 @@ import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import java.time.LocalDate
 import kotlin.math.log
 
 
@@ -71,6 +72,26 @@ class DashboardActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        // Zdefiniuj zmienną przechowującą aktualny miesiąc i rok
+        val currentDate = LocalDate.now()
+        val currentMonth = currentDate.month
+        val currentYear = currentDate.year
+
+        // Zdefiniuj zmienną przechowującą poprzedni miesiąc i rok
+        var previousMonth = currentMonth
+        var previousYear = currentYear
+
+        // Sprawdź, czy rozpoczął się nowy miesiąc
+        if (currentMonth != previousMonth || currentYear != previousYear) {
+            // Nowy miesiąc, zresetuj zmienną freeFounds
+            freeFounds = 100.00
+
+            // Zaktualizuj zmienne przechowujące poprzedni miesiąc i rok
+            previousMonth = currentMonth
+            previousYear = currentYear
+        }
+
 
         val tokenManager = TokenManager(this)
         val tokenAccess = tokenManager.getTokenAccess()

@@ -22,7 +22,7 @@ public interface ExpensesRepository extends JpaRepository<Expenses,Long> {
 
     @Query(value = "SELECT e FROM Expenses e " +
             "WHERE e.userEntity.idUser = :userId " +
-            "ORDER BY e.createdDate DESC LIMIT 5")
+            "ORDER BY e.createdDate  ASC LIMIT 5")
     List<Expenses> getFewLastExpensesByUserId(@Param("userId") Long userId);
 
     @Query(value= "SELECT c.name AS category, COALESCE(SUM(e.amount), 0) AS value\n" +

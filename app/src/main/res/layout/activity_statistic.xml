@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="#FFFFFF">
 
     <LinearLayout
 
@@ -68,91 +69,15 @@
             android:layout_marginTop="10dp"
             android:text="Wydatki oraz dochody miesięczne"
             android:gravity="center"
-            android:textColor="@color/black"
+            android:textColor="@color/lightblue"
             android:textSize="20dp">
         </TextView>
 
-        <!-- Wykresy dla poszczególnych miesięcy -->
-        <LinearLayout
+        <ListView
+            android:id="@+id/statisticListView"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:layout_marginTop="12dp">
-
-            <!-- Wykres dla stycznia -->
-            <com.github.mikephil.charting.charts.BarChart
-                android:id="@+id/chartJanuary"
-                android:layout_width="match_parent"
-                android:layout_height="280dp"/>
-
-            <!-- Wykres dla lutego -->
-            <com.github.mikephil.charting.charts.BarChart
-                android:id="@+id/chartFebruary"
-                android:layout_width="match_parent"
-                android:layout_height="280dp"
-                android:layout_marginTop="12dp"/>
-
-            <com.github.mikephil.charting.charts.BarChart
-                android:id="@+id/chartMarch"
-                android:layout_width="match_parent"
-                android:layout_height="280dp"
-                android:layout_marginTop="12dp"/>
-
-            <com.github.mikephil.charting.charts.BarChart
-                android:id="@+id/chartApril"
-                android:layout_width="match_parent"
-                android:layout_height="280dp"
-                android:layout_marginTop="12dp"/>
-
-            <com.github.mikephil.charting.charts.BarChart
-                android:id="@+id/chartMay"
-                android:layout_width="match_parent"
-                android:layout_height="280dp"
-                android:layout_marginTop="12dp"/>
-
-            <com.github.mikephil.charting.charts.BarChart
-                android:id="@+id/chartJune"
-                android:layout_width="match_parent"
-                android:layout_height="280dp"
-                android:layout_marginTop="12dp"/>
-
-            <com.github.mikephil.charting.charts.BarChart
-                android:id="@+id/chartJuly"
-                android:layout_width="match_parent"
-                android:layout_height="280dp"
-                android:layout_marginTop="12dp"/>
-
-            <com.github.mikephil.charting.charts.BarChart
-                android:id="@+id/chartAugust"
-                android:layout_width="match_parent"
-                android:layout_height="280dp"
-                android:layout_marginTop="12dp"/>
-
-            <com.github.mikephil.charting.charts.BarChart
-                android:id="@+id/chartSeptember"
-                android:layout_width="match_parent"
-                android:layout_height="280dp"
-                android:layout_marginTop="12dp"/>
-
-            <com.github.mikephil.charting.charts.BarChart
-                android:id="@+id/chartOctober"
-                android:layout_width="match_parent"
-                android:layout_height="280dp"
-                android:layout_marginTop="12dp"/>
-
-            <com.github.mikephil.charting.charts.BarChart
-                android:id="@+id/chartNovember"
-                android:layout_width="match_parent"
-                android:layout_height="280dp"
-                android:layout_marginTop="12dp"/>
-
-            <com.github.mikephil.charting.charts.BarChart
-                android:id="@+id/chartDecember"
-                android:layout_width="match_parent"
-                android:layout_height="280dp"
-                android:layout_marginTop="12dp"/>
-
-        </LinearLayout>
+            android:layout_height="wrap_content">
+        </ListView>
 
     </LinearLayout>
 </ScrollView>
