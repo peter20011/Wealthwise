@@ -34,7 +34,14 @@ import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import java.security.KeyStore
+import java.security.SecureRandom
+import java.security.cert.CertificateFactory
+import java.security.cert.X509Certificate
 import java.time.LocalDate
+import javax.net.ssl.SSLContext
+import javax.net.ssl.TrustManagerFactory
+import javax.net.ssl.X509TrustManager
 import kotlin.math.log
 
 
@@ -68,7 +75,7 @@ class DashboardActivity : AppCompatActivity() {
     )
     private var entries = ArrayList<PieEntry>()
     private var dataSet = PieDataSet(entries, "")
-    private val BASE_URL = "http://10.0.2.2:8080"
+    private val BASE_URL = "https://10.0.2.2:8443"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -104,7 +111,7 @@ class DashboardActivity : AppCompatActivity() {
             Toast.makeText(this, "Brak uprawnień", Toast.LENGTH_SHORT).show()
         }
 
-        if(tokenManager.refreshTokenIfNeeded()){
+        if(tokenManager.refreshTokenIfNeeded(resources)){
             Toast.makeText(this, "Token odświeżony", Toast.LENGTH_SHORT).show()
         }
 
@@ -161,7 +168,25 @@ class DashboardActivity : AppCompatActivity() {
             val interceptor = HttpLoggingInterceptor()
             interceptor.level = HttpLoggingInterceptor.Level.BODY
 
+            val trustManagerFactory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm())
+            val keyStore = KeyStore.getInstance(KeyStore.getDefaultType())
+            keyStore.load(null, null)
+
+            val certificateFactory = CertificateFactory.getInstance("X.509")
+            val certificateInputStream1 = resources.openRawResource(R.raw.ca)
+            val yourTrustedCertificate1 = certificateFactory.generateCertificate(certificateInputStream1) as X509Certificate
+            certificateInputStream1.close()
+
+
+            keyStore.setCertificateEntry("ca", yourTrustedCertificate1)
+            trustManagerFactory.init(keyStore)
+            val trustManagers = trustManagerFactory.trustManagers
+
+            val sslContext = SSLContext.getInstance("TLS")
+            sslContext.init(null, trustManagers, SecureRandom())
+
             val client = OkHttpClient.Builder()
+                .sslSocketFactory(sslContext.socketFactory, trustManagers[0] as X509TrustManager)
                 .addInterceptor(interceptor)
                 .build()
 
@@ -197,7 +222,27 @@ class DashboardActivity : AppCompatActivity() {
         val interceptor = HttpLoggingInterceptor()
         interceptor.level = HttpLoggingInterceptor.Level.BODY
 
+        val trustManagerFactory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm())
+        val keyStore = KeyStore.getInstance(KeyStore.getDefaultType())
+        keyStore.load(null, null)
+
+        val certificateFactory = CertificateFactory.getInstance("X.509")
+        val certificateInputStream1 = resources.openRawResource(R.raw.ca)
+        val yourTrustedCertificate1 = certificateFactory.generateCertificate(certificateInputStream1) as X509Certificate
+        certificateInputStream1.close()
+
+
+        keyStore.setCertificateEntry("ca", yourTrustedCertificate1)
+        trustManagerFactory.init(keyStore)
+        val trustManagers = trustManagerFactory.trustManagers
+
+        val sslContext = SSLContext.getInstance("TLS")
+        sslContext.init(null, trustManagers, SecureRandom())
+
+
+
         val client = OkHttpClient.Builder()
+            .sslSocketFactory(sslContext.socketFactory, trustManagers[0] as X509TrustManager)
             .addInterceptor(interceptor)
             .build()
 
@@ -228,7 +273,6 @@ class DashboardActivity : AppCompatActivity() {
                 }
             }
             override fun onFailure(call: Call<UserDataResponse>, t: Throwable) {
-                Toast.makeText(this@DashboardActivity, "Wystąpił błąd podczas pobierania danych użytkownika: " + t.message, Toast.LENGTH_SHORT).show()
             }
         })
 
@@ -280,7 +324,25 @@ class DashboardActivity : AppCompatActivity() {
                       val interceptor = HttpLoggingInterceptor()
                       interceptor.level = HttpLoggingInterceptor.Level.BODY
 
+                      val trustManagerFactory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm())
+                      val keyStore = KeyStore.getInstance(KeyStore.getDefaultType())
+                      keyStore.load(null, null)
+
+                      val certificateFactory = CertificateFactory.getInstance("X.509")
+                      val certificateInputStream1 = resources.openRawResource(R.raw.ca)
+                      val yourTrustedCertificate1 = certificateFactory.generateCertificate(certificateInputStream1) as X509Certificate
+                      certificateInputStream1.close()
+
+
+                      keyStore.setCertificateEntry("ca", yourTrustedCertificate1)
+                      trustManagerFactory.init(keyStore)
+                      val trustManagers = trustManagerFactory.trustManagers
+
+                      val sslContext = SSLContext.getInstance("TLS")
+                      sslContext.init(null, trustManagers, SecureRandom())
+
                       val client = OkHttpClient.Builder()
+                          .sslSocketFactory(sslContext.socketFactory, trustManagers[0] as X509TrustManager)
                           .addInterceptor(interceptor)
                           .build()
 
@@ -371,7 +433,25 @@ class DashboardActivity : AppCompatActivity() {
                                 val interceptor = HttpLoggingInterceptor()
                                 interceptor.level = HttpLoggingInterceptor.Level.BODY
 
+                                val trustManagerFactory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm())
+                                val keyStore = KeyStore.getInstance(KeyStore.getDefaultType())
+                                keyStore.load(null, null)
+
+                                val certificateFactory = CertificateFactory.getInstance("X.509")
+                                val certificateInputStream1 = resources.openRawResource(R.raw.ca)
+                                val yourTrustedCertificate1 = certificateFactory.generateCertificate(certificateInputStream1) as X509Certificate
+                                certificateInputStream1.close()
+
+
+                                keyStore.setCertificateEntry("ca", yourTrustedCertificate1)
+                                trustManagerFactory.init(keyStore)
+                                val trustManagers = trustManagerFactory.trustManagers
+
+                                val sslContext = SSLContext.getInstance("TLS")
+                                sslContext.init(null, trustManagers, SecureRandom())
+
                                 val client = OkHttpClient.Builder()
+                                    .sslSocketFactory(sslContext.socketFactory, trustManagers[0] as X509TrustManager)
                                     .addInterceptor(interceptor)
                                     .build()
 
@@ -525,7 +605,25 @@ class DashboardActivity : AppCompatActivity() {
         val interceptor = HttpLoggingInterceptor()
         interceptor.level = HttpLoggingInterceptor.Level.BODY
 
+        val trustManagerFactory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm())
+        val keyStore = KeyStore.getInstance(KeyStore.getDefaultType())
+        keyStore.load(null, null)
+
+        val certificateFactory = CertificateFactory.getInstance("X.509")
+        val certificateInputStream1 = resources.openRawResource(R.raw.ca)
+        val yourTrustedCertificate1 = certificateFactory.generateCertificate(certificateInputStream1) as X509Certificate
+        certificateInputStream1.close()
+
+
+        keyStore.setCertificateEntry("ca", yourTrustedCertificate1)
+        trustManagerFactory.init(keyStore)
+        val trustManagers = trustManagerFactory.trustManagers
+
+        val sslContext = SSLContext.getInstance("TLS")
+        sslContext.init(null, trustManagers, SecureRandom())
+
         val client = OkHttpClient.Builder()
+            .sslSocketFactory(sslContext.socketFactory, trustManagers[0] as X509TrustManager)
             .addInterceptor(interceptor)
             .build()
 
@@ -559,8 +657,6 @@ class DashboardActivity : AppCompatActivity() {
                     else{
                         totalIncome = incomeResponse?.value!!
                     }
-                }else{
-                    Toast.makeText(this@DashboardActivity, "Wystąpił błąd podczas pobierania danych użytkownika", Toast.LENGTH_SHORT).show()
                 }
             }
             override fun onFailure(call: Call<IncomeResponse>, t: Throwable) {
@@ -574,7 +670,25 @@ class DashboardActivity : AppCompatActivity() {
         val interceptor = HttpLoggingInterceptor()
         interceptor.level = HttpLoggingInterceptor.Level.BODY
 
+        val trustManagerFactory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm())
+        val keyStore = KeyStore.getInstance(KeyStore.getDefaultType())
+        keyStore.load(null, null)
+
+        val certificateFactory = CertificateFactory.getInstance("X.509")
+        val certificateInputStream1 = resources.openRawResource(R.raw.ca)
+        val yourTrustedCertificate1 = certificateFactory.generateCertificate(certificateInputStream1) as X509Certificate
+        certificateInputStream1.close()
+
+
+        keyStore.setCertificateEntry("ca", yourTrustedCertificate1)
+        trustManagerFactory.init(keyStore)
+        val trustManagers = trustManagerFactory.trustManagers
+
+        val sslContext = SSLContext.getInstance("TLS")
+        sslContext.init(null, trustManagers, SecureRandom())
+
         val client = OkHttpClient.Builder()
+            .sslSocketFactory(sslContext.socketFactory, trustManagers[0] as X509TrustManager)
             .addInterceptor(interceptor)
             .build()
 

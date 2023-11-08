@@ -10,6 +10,7 @@ import android.widget.ImageView
 import android.widget.Toast
 import at.favre.lib.crypto.bcrypt.BCrypt
 import com.example.wealthwise.DataClass.RegistrationData
+import com.github.mikephil.charting.BuildConfig
 import java.util.regex.Pattern
 import java.text.SimpleDateFormat
 import java.text.ParseException
@@ -21,6 +22,14 @@ import retrofit2.Callback
 import retrofit2.Response
 import okhttp3.ResponseBody
 import okhttp3.logging.HttpLoggingInterceptor
+import java.io.FileInputStream
+import java.security.KeyStore
+import java.security.SecureRandom
+import java.security.cert.CertificateFactory
+import java.security.cert.X509Certificate
+import javax.net.ssl.SSLContext
+import javax.net.ssl.TrustManagerFactory
+import javax.net.ssl.X509TrustManager
 
 class RegistrationActivity : AppCompatActivity() {
 
@@ -61,7 +70,7 @@ class RegistrationActivity : AppCompatActivity() {
             val birthDay = birthDateEditText.text.toString()
             val password = passwordEditText.text.toString()
             val confirmPassword = passwordNewEditText.text.toString()
-            val BASE_URL = "http://10.0.2.2:8080"
+            val BASE_URL = "https://10.0.2.2:8443"
 
 
             if (name.isEmpty() || surname.isEmpty() || email.isEmpty() || birthDay.isEmpty() || password.isEmpty() || confirmPassword.isEmpty()) {
@@ -116,14 +125,33 @@ class RegistrationActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
 
-
             val interceptor = HttpLoggingInterceptor()
             interceptor.level = HttpLoggingInterceptor.Level.BODY
 
+            val trustManagerFactory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm())
+            val keyStore = KeyStore.getInstance(KeyStore.getDefaultType())
+            keyStore.load(null, null)
+
+            val certificateFactory = CertificateFactory.getInstance("X.509")
+            val certificateInputStream1 = resources.openRawResource(R.raw.ca)
+            val yourTrustedCertificate1 = certificateFactory.generateCertificate(certificateInputStream1) as X509Certificate
+            certificateInputStream1.close()
+
+
+            keyStore.setCertificateEntry("ca", yourTrustedCertificate1)
+            trustManagerFactory.init(keyStore)
+            val trustManagers = trustManagerFactory.trustManagers
+
+            val sslContext = SSLContext.getInstance("TLS")
+            sslContext.init(null, trustManagers, SecureRandom())
+
+
+
+
             val client = OkHttpClient.Builder()
+                .sslSocketFactory(sslContext.socketFactory, trustManagers[0] as X509TrustManager)
                 .addInterceptor(interceptor)
                 .build()
-
 
             val retrofit = Retrofit.Builder()
                 .baseUrl(BASE_URL)
@@ -132,6 +160,8 @@ class RegistrationActivity : AppCompatActivity() {
                 .build()
 
             val apiService = retrofit.create(ApiService::class.java)
+
+
 
             // Utwórz obiekt reprezentujący dane rejestracji
             val registrationData = RegistrationData(name, surname, birthDay, email, password, confirmPassword)

@@ -2,6 +2,7 @@ package com.example.wealthwise
 
 import android.content.Context
 import android.content.SharedPreferences
+import android.content.res.Resources
 import android.os.Build
 import android.security.keystore.KeyGenParameterSpec
 import android.security.keystore.KeyProperties
@@ -9,6 +10,7 @@ import android.util.Base64
 import android.util.Log
 import androidx.annotation.RequiresApi
 import com.example.wealthwise.DataClass.RefreshToken
+
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import org.json.JSONObject
@@ -21,16 +23,22 @@ import java.io.InputStream
 import java.nio.charset.StandardCharsets
 import java.security.DigestOutputStream
 import java.security.KeyStore
+import java.security.SecureRandom
+import java.security.cert.CertificateFactory
+import java.security.cert.X509Certificate
 import javax.crypto.Cipher
 import javax.crypto.KeyGenerator
 import javax.crypto.SecretKey
 import javax.crypto.spec.IvParameterSpec
+import javax.net.ssl.SSLContext
+import javax.net.ssl.TrustManagerFactory
+import kotlin.coroutines.coroutineContext
 
 @RequiresApi(Build.VERSION_CODES.M)
 class TokenManager(context: Context) {
     private val sharedPreferences: SharedPreferences = context.getSharedPreferences("Cookies", Context.MODE_PRIVATE)
     private val keyStore: KeyStore = KeyStore.getInstance("AndroidKeyStore").apply { load(null) }
-    private val BASE_URL = "http://10.0.2.2:8080"
+    private val BASE_URL = "https://10.0.2.2:8443"
 
     private fun getKey() : SecretKey {
         val existingKey = keyStore.getEntry("secret",null) as? KeyStore.SecretKeyEntry
@@ -121,9 +129,26 @@ class TokenManager(context: Context) {
         return 0 // Domyślnie brak lub błąd w czasie wygaśnięcia
     }
 
-    fun refreshToken(tokenRefresh: String): Pair<String?, String?> {
+    fun refreshToken(tokenRefresh: String ,resources: Resources): Pair<String?, String?> {
             val interceptor = HttpLoggingInterceptor()
             interceptor.level = HttpLoggingInterceptor.Level.BODY
+
+        val trustManagerFactory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm())
+        val keyStore = KeyStore.getInstance(KeyStore.getDefaultType())
+        keyStore.load(null, null)
+
+        val certificateFactory = CertificateFactory.getInstance("X.509")
+        val certificateInputStream1 = resources.openRawResource(R.raw.ca)
+        val yourTrustedCertificate1 = certificateFactory.generateCertificate(certificateInputStream1) as X509Certificate
+        certificateInputStream1.close()
+
+
+        keyStore.setCertificateEntry("ca", yourTrustedCertificate1)
+        trustManagerFactory.init(keyStore)
+        val trustManagers = trustManagerFactory.trustManagers
+
+        val sslContext = SSLContext.getInstance("TLS")
+        sslContext.init(null, trustManagers, SecureRandom())
 
             val client = OkHttpClient.Builder()
                 .addInterceptor(interceptor)
@@ -160,7 +185,7 @@ class TokenManager(context: Context) {
         return Pair(newTokenAccess, newTokenRefresh)
     }
 
-     fun refreshTokenIfNeeded(): Boolean {
+     fun refreshTokenIfNeeded(resources: Resources): Boolean {
             val tokenAccess = getTokenAccess()
             val tokenRefresh = getTokenRefresh()
 
@@ -174,7 +199,7 @@ class TokenManager(context: Context) {
 
             if (tokenExpireTime <= currentTime) {
                 // Token dostępu wygasł lub wygaśnie wkrótce, odświeżamy
-                val (newTokenAccess, newTokenRefresh) = refreshToken(tokenRefresh)
+                val (newTokenAccess, newTokenRefresh) = refreshToken(tokenRefresh, resources)
 
                 if (newTokenAccess != null && newTokenRefresh != null) {
                     saveToken(newTokenAccess, newTokenRefresh)

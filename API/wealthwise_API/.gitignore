@@ -28,6 +28,9 @@ target/
 build/
 !**/src/main/**/build/
 !**/src/test/**/build/
-
+/src/main/resources/fullchain.pem
+/src/main/resources/cert-pem.pem
+/target
 ### VS Code ###
 .vscode/
+

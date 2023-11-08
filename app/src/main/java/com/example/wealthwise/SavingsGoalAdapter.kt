@@ -1,6 +1,7 @@
 package com.example.wealthwise
 
 import android.app.AlertDialog
+import android.content.res.Resources
 import android.text.InputType
 import android.view.LayoutInflater
 import android.view.View
@@ -21,12 +22,19 @@ import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import java.security.KeyStore
+import java.security.SecureRandom
+import java.security.cert.CertificateFactory
+import java.security.cert.X509Certificate
+import javax.net.ssl.SSLContext
+import javax.net.ssl.TrustManagerFactory
+import javax.net.ssl.X509TrustManager
 
-class SavingsGoalAdapter(private val savingsGoals: MutableList<SavingsGoal>) :
+class SavingsGoalAdapter(private val savingsGoals: MutableList<SavingsGoal> , private val resources: Resources ) :
     RecyclerView.Adapter<SavingsGoalAdapter.SavingsGoalViewHolder>() {
 
     private val progressMap = mutableMapOf<Int, Int>()
-    private val BASE_URL = "http://10.0.2.2:8080"
+    private val BASE_URL = "https://10.0.2.2:8443"
 
     inner class SavingsGoalViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val titleTextView: TextView = itemView.findViewById(R.id.goalTitleTextView)
@@ -61,7 +69,7 @@ class SavingsGoalAdapter(private val savingsGoals: MutableList<SavingsGoal>) :
         }
 
         holder.itemView.setOnClickListener {
-            showEditSavingsGoalDialog(holder.adapterPosition, holder)
+            showEditSavingsGoalDialog(holder.adapterPosition, holder,resources)
         }
     }
 
@@ -74,7 +82,7 @@ class SavingsGoalAdapter(private val savingsGoals: MutableList<SavingsGoal>) :
         notifyItemChanged(goalIndex)
     }
 
-    private fun showEditSavingsGoalDialog(position: Int, holder: SavingsGoalViewHolder) {
+    private fun showEditSavingsGoalDialog(position: Int, holder: SavingsGoalViewHolder,resources: Resources) {
         val tokenManager = TokenManager(holder.itemView.context)
         val savingsGoal = savingsGoals[position]
 
@@ -102,7 +110,25 @@ class SavingsGoalAdapter(private val savingsGoals: MutableList<SavingsGoal>) :
                 val interceptor = HttpLoggingInterceptor()
                 interceptor.level = HttpLoggingInterceptor.Level.BODY
 
+                val trustManagerFactory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm())
+                val keyStore = KeyStore.getInstance(KeyStore.getDefaultType())
+                keyStore.load(null, null)
+
+                val certificateFactory = CertificateFactory.getInstance("X.509")
+                val certificateInputStream1 = resources.openRawResource(R.raw.ca)
+                val yourTrustedCertificate1 = certificateFactory.generateCertificate(certificateInputStream1) as X509Certificate
+                certificateInputStream1.close()
+
+
+                keyStore.setCertificateEntry("ca", yourTrustedCertificate1)
+                trustManagerFactory.init(keyStore)
+                val trustManagers = trustManagerFactory.trustManagers
+
+                val sslContext = SSLContext.getInstance("TLS")
+                sslContext.init(null, trustManagers, SecureRandom())
+
                 val client = OkHttpClient.Builder()
+                    .sslSocketFactory(sslContext.socketFactory, trustManagers[0] as X509TrustManager)
                     .addInterceptor(interceptor)
                     .build()
 

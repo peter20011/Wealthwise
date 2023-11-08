@@ -27,7 +27,14 @@ import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import java.security.KeyStore
+import java.security.SecureRandom
+import java.security.cert.CertificateFactory
+import java.security.cert.X509Certificate
 import java.util.regex.Pattern
+import javax.net.ssl.SSLContext
+import javax.net.ssl.TrustManagerFactory
+import javax.net.ssl.X509TrustManager
 
 class UserProfileActivity : AppCompatActivity() {
 
@@ -39,7 +46,7 @@ class UserProfileActivity : AppCompatActivity() {
     private lateinit var addSavingsGoalButton : Button
     private var savingsGoals = mutableListOf<SavingsGoal>()
     private lateinit var adapter: SavingsGoalAdapter
-    private val BASE_URL = "http://10.0.2.2:8080"
+    private val BASE_URL = "https://10.0.2.2:8443"
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -54,7 +61,7 @@ class UserProfileActivity : AppCompatActivity() {
             Toast.makeText(this, "Brak uprawnień", Toast.LENGTH_SHORT).show()
         }
 
-        if(tokenManager.refreshTokenIfNeeded()){
+        if(tokenManager.refreshTokenIfNeeded(resources)){
             Toast.makeText(this, "Token odświeżony", Toast.LENGTH_SHORT).show()
         }
 
@@ -71,13 +78,31 @@ class UserProfileActivity : AppCompatActivity() {
 
         val recyclerView = findViewById<RecyclerView>(R.id.savingsRecyclerView)
         recyclerView.layoutManager = LinearLayoutManager(this)
-        adapter = SavingsGoalAdapter(savingsGoals)
+        adapter = SavingsGoalAdapter(savingsGoals,resources)
         recyclerView.adapter = adapter
 
         val interceptor = HttpLoggingInterceptor()
         interceptor.level = HttpLoggingInterceptor.Level.BODY
 
+        val trustManagerFactory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm())
+        val keyStore = KeyStore.getInstance(KeyStore.getDefaultType())
+        keyStore.load(null, null)
+
+        val certificateFactory = CertificateFactory.getInstance("X.509")
+        val certificateInputStream1 = resources.openRawResource(R.raw.ca)
+        val yourTrustedCertificate1 = certificateFactory.generateCertificate(certificateInputStream1) as X509Certificate
+        certificateInputStream1.close()
+
+
+        keyStore.setCertificateEntry("ca", yourTrustedCertificate1)
+        trustManagerFactory.init(keyStore)
+        val trustManagers = trustManagerFactory.trustManagers
+
+        val sslContext = SSLContext.getInstance("TLS")
+        sslContext.init(null, trustManagers, SecureRandom())
+
         val client = OkHttpClient.Builder()
+            .sslSocketFactory(sslContext.socketFactory, trustManagers[0] as X509TrustManager)
             .addInterceptor(interceptor)
             .build()
 
@@ -212,7 +237,7 @@ class UserProfileActivity : AppCompatActivity() {
                 // Tutaj można dodać logikę do zmiany hasła na serwerze lub w lokalnym składowisku
                 if (currentPassword.isNotEmpty() && newPassword.isNotEmpty() && Pattern.matches(passwordPattern, newPassword)){
                     val tokenManager = TokenManager(this)
-                    if(tokenManager.refreshTokenIfNeeded()){
+                    if(tokenManager.refreshTokenIfNeeded(resources)){
                         Toast.makeText(this, "Token odświeżony", Toast.LENGTH_SHORT).show()
                     }
 
@@ -221,7 +246,25 @@ class UserProfileActivity : AppCompatActivity() {
                     val interceptor = HttpLoggingInterceptor()
                     interceptor.level = HttpLoggingInterceptor.Level.BODY
 
+                    val trustManagerFactory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm())
+                    val keyStore = KeyStore.getInstance(KeyStore.getDefaultType())
+                    keyStore.load(null, null)
+
+                    val certificateFactory = CertificateFactory.getInstance("X.509")
+                    val certificateInputStream1 = resources.openRawResource(R.raw.ca)
+                    val yourTrustedCertificate1 = certificateFactory.generateCertificate(certificateInputStream1) as X509Certificate
+                    certificateInputStream1.close()
+
+
+                    keyStore.setCertificateEntry("ca", yourTrustedCertificate1)
+                    trustManagerFactory.init(keyStore)
+                    val trustManagers = trustManagerFactory.trustManagers
+
+                    val sslContext = SSLContext.getInstance("TLS")
+                    sslContext.init(null, trustManagers, SecureRandom())
+
                     val client = OkHttpClient.Builder()
+                        .sslSocketFactory(sslContext.socketFactory, trustManagers[0] as X509TrustManager)
                         .addInterceptor(interceptor)
                         .build()
 
@@ -310,7 +353,25 @@ class UserProfileActivity : AppCompatActivity() {
                     val interceptor = HttpLoggingInterceptor()
                     interceptor.level = HttpLoggingInterceptor.Level.BODY
 
+                    val trustManagerFactory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm())
+                    val keyStore = KeyStore.getInstance(KeyStore.getDefaultType())
+                    keyStore.load(null, null)
+
+                    val certificateFactory = CertificateFactory.getInstance("X.509")
+                    val certificateInputStream1 = resources.openRawResource(R.raw.ca)
+                    val yourTrustedCertificate1 = certificateFactory.generateCertificate(certificateInputStream1) as X509Certificate
+                    certificateInputStream1.close()
+
+
+                    keyStore.setCertificateEntry("ca", yourTrustedCertificate1)
+                    trustManagerFactory.init(keyStore)
+                    val trustManagers = trustManagerFactory.trustManagers
+
+                    val sslContext = SSLContext.getInstance("TLS")
+                    sslContext.init(null, trustManagers, SecureRandom())
+
                     val client = OkHttpClient.Builder()
+                        .sslSocketFactory(sslContext.socketFactory, trustManagers[0] as X509TrustManager)
                         .addInterceptor(interceptor)
                         .build()
 

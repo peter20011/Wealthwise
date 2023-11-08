@@ -13,3 +13,6 @@
 .externalNativeBuild
 .cxx
 local.properties
+/API/wealthwise_API/src/main/resources/cert-key.pem
+/API/wealthwise_API/src/main/resources/fullchain.pem
+/app/src/main/res/raw/ca.pem

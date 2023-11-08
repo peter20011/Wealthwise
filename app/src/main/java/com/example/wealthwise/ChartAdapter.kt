@@ -36,6 +36,9 @@ class ChartAdapter(private val context: Context) : BaseAdapter() {
     }
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
+        if (data[position].month ==  null) {
+            return View(context)
+        }
         val chartData = data[position]
         val chartView = LayoutInflater.from(context).inflate(R.layout.chart_item, null)
 
