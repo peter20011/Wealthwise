@@ -12,7 +12,8 @@ services:
       - POSTGRES_USER=${POSTGRES_USER}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
     ports:
-      - "8080:8080"
+    - "8082:8082"
+    - "8443:8443"
     depends_on:
       - db
 

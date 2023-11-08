@@ -8,8 +8,10 @@ echo "spring.jpa.show-sql=true" >> application.properties
 echo "spring.datasource.username=$POSTGRES_USER" >> application.properties
 echo "spring.datasource.password=$POSTGRES_PASSWORD" >> application.properties
 
-echo "spring.servlet.multipart.max-file-size=5MB" >> application.properties
-echo "spring.servlet.multipart.max-request-size=5MB" >> application.properties
+echo "server.port=8443" >> application.properties
+echo "server.ssl.certificate=/app/fullchain.pem" >> application.properties
+echo "server.ssl.certificate-private-key=/app/cert-key.pem" >> application.properties
+echo "server.ssl.client-aut=need" >> application.properties
 
 echo "spring.datasource.driver-class-name=org.postgresql.Driver" >> application.properties
 echo "Waiting for the PostgreSQL server to start on $DB_HOST:$DB_PORT"
