@@ -54,7 +54,7 @@ public class AssetService {
 
            assetDAO.save(assets);
 
-            return new ResponseEntity<>("Assets has been saved successfully",HttpStatus.OK);
+            return new ResponseEntity<String>("Assets has been saved successfully",HttpStatus.OK);
         }catch (Exception e){
             return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }

@@ -3,17 +3,22 @@ package com.example.wealthwise_api.Security;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.Customizer;
-import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
+import org.springframework.security.web.authentication.preauth.x509.X509AuthenticationFilter;
 import org.springframework.security.web.servlet.util.matcher.MvcRequestMatcher;
 
 
@@ -26,9 +31,11 @@ public class SecurityFilterChainConfig {
     private final AuthenticationEntryPoint authenticationEntryPoint;
     private final LogoutHandler logoutHandler;
 
+
     public SecurityFilterChainConfig(AuthenticationProvider authenticationProvider,
                                      JWTAuthenticationFilter jwtAuthenticationFilter,
-                                     @Qualifier("delegatedAuthEntryPoint") AuthenticationEntryPoint authenticationEntryPoint, LogoutHandler logoutHandler){
+                                     @Qualifier("delegatedAuthEntryPoint") AuthenticationEntryPoint authenticationEntryPoint,
+                                     LogoutHandler logoutHandler){
         this.authenticationProvider = authenticationProvider;
         this.jwtAuthenticationFilter = jwtAuthenticationFilter;
         this.authenticationEntryPoint = authenticationEntryPoint;
@@ -39,6 +46,8 @@ public class SecurityFilterChainConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
          http
+                 .x509(x509->x509
+                .subjectPrincipalRegex("CN=Wealthwise"))
                 .csrf(csrf->csrf.disable())
                 .cors(Customizer.withDefaults())
                 .exceptionHandling(exceptionalHandling->exceptionalHandling
@@ -55,9 +64,10 @@ public class SecurityFilterChainConfig {
                         .logoutSuccessHandler((request, response, authentication) -> {
                             SecurityContextHolder.clearContext();
                         })
-                );
+                ).requiresChannel(channel->channel.anyRequest().requiresSecure());
 
 
          return http.build();
     }
+
 }
