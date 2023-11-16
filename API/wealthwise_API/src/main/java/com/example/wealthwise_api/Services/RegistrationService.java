@@ -16,7 +16,6 @@ public class RegistrationService {
     private final EmailValidatorService emailValidatorService;
     private final UserDAO userDAO;
     private final PasswordEncoder passwordEncoder;
-
     private final PasswordValidatorService passwordValidatorService;
 
 

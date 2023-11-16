@@ -1,6 +1,5 @@
-package com.example.wealthwise
+package com.example.wealthwise.Activities
 
-import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
@@ -14,11 +13,15 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.wealthwise.ApiService
 import com.example.wealthwise.DataClass.ChangePassword
 import com.example.wealthwise.DataClass.SavingsGoal
 import com.example.wealthwise.DataClass.SavingsGoalRequest
 import com.example.wealthwise.DataClass.TokenRequest
 import com.example.wealthwise.DataClass.UserDataResponse
+import com.example.wealthwise.R
+import com.example.wealthwise.Adapters.SavingsGoalAdapter
+import com.example.wealthwise.Manager.TokenManager
 import okhttp3.OkHttpClient
 import okhttp3.ResponseBody
 import okhttp3.logging.HttpLoggingInterceptor
@@ -183,12 +186,12 @@ class UserProfileActivity : AppCompatActivity() {
         }
 
         statisticIcon.setOnClickListener{
-            val intent=Intent(this,StatisticActivity::class.java)
+            val intent=Intent(this, StatisticActivity::class.java)
             startActivity(intent)
         }
 
         assetsIcon.setOnClickListener{
-            val intent=Intent(this,AssetsActivity::class.java)
+            val intent=Intent(this, AssetsActivity::class.java)
             startActivity(intent)
         }
 
@@ -203,7 +206,7 @@ class UserProfileActivity : AppCompatActivity() {
 
     // Metoda do wyświetlenia dwuetapowego okna dialogowego do resetowania hasła
      fun showResetPasswordDialog() {
-        val builder = AlertDialog.Builder(this,R.style.AlertDialogTheme)
+        val builder = AlertDialog.Builder(this, R.style.AlertDialogTheme)
         builder.setTitle("Podaj obecne hasło")
 
         val currentPasswordInput = EditText(this)
@@ -225,7 +228,7 @@ class UserProfileActivity : AppCompatActivity() {
             newPasswordLayout.addView(newPasswordInput)
 
 
-            val newPasswordBuilder = AlertDialog.Builder(this,R.style.AlertDialogTheme)
+            val newPasswordBuilder = AlertDialog.Builder(this, R.style.AlertDialogTheme)
             newPasswordBuilder.setTitle("Nowe hasło")
             newPasswordBuilder.setView(newPasswordLayout)
 
@@ -317,7 +320,7 @@ class UserProfileActivity : AppCompatActivity() {
 
     private fun addSavingsGoal(adapter: SavingsGoalAdapter) {
         val tokenManager = TokenManager(this)
-        val builder = AlertDialog.Builder(this,R.style.AlertDialogTheme)
+        val builder = AlertDialog.Builder(this, R.style.AlertDialogTheme)
         builder.setTitle("Podaj cel oszczędzania")
 
         val currentSavingsGoal = EditText(this)
@@ -338,7 +341,7 @@ class UserProfileActivity : AppCompatActivity() {
             newSavingsLayout.addView(newSavingsInput)
 
 
-            val newGoalBuilder = AlertDialog.Builder(this,R.style.AlertDialogTheme)
+            val newGoalBuilder = AlertDialog.Builder(this, R.style.AlertDialogTheme)
             newGoalBuilder.setTitle("Kwota docelowa")
             newGoalBuilder.setView(newSavingsLayout)
 

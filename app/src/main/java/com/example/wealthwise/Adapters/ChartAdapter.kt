@@ -1,4 +1,4 @@
-package com.example.wealthwise
+package com.example.wealthwise.Adapters
 
 import android.content.Context
 import android.graphics.Color
@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.BaseAdapter
 import com.example.wealthwise.DataClass.StatisticResponse
+import com.example.wealthwise.R
 import com.github.mikephil.charting.charts.BarChart
 import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.components.YAxis

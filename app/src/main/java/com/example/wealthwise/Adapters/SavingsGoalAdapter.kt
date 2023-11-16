@@ -1,4 +1,4 @@
-package com.example.wealthwise
+package com.example.wealthwise.Adapters
 
 import android.app.AlertDialog
 import android.content.res.Resources
@@ -11,9 +11,11 @@ import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
+import com.example.wealthwise.ApiService
 import com.example.wealthwise.DataClass.AddCashSavingsGoalRequest
 import com.example.wealthwise.DataClass.SavingsGoal
-import com.example.wealthwise.DataClass.SavingsGoalRequest
+import com.example.wealthwise.R
+import com.example.wealthwise.Manager.TokenManager
 import okhttp3.OkHttpClient
 import okhttp3.ResponseBody
 import okhttp3.logging.HttpLoggingInterceptor
@@ -82,7 +84,7 @@ class SavingsGoalAdapter(private val savingsGoals: MutableList<SavingsGoal> , pr
         notifyItemChanged(goalIndex)
     }
 
-    private fun showEditSavingsGoalDialog(position: Int, holder: SavingsGoalViewHolder,resources: Resources) {
+    private fun showEditSavingsGoalDialog(position: Int, holder: SavingsGoalViewHolder, resources: Resources) {
         val tokenManager = TokenManager(holder.itemView.context)
         val savingsGoal = savingsGoals[position]
 

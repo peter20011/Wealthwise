@@ -1,4 +1,4 @@
-package com.example.wealthwise
+package com.example.wealthwise.Activities
 
 import android.content.Context
 import android.content.Intent
@@ -8,9 +8,9 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.Toast
-import at.favre.lib.crypto.bcrypt.BCrypt
+import com.example.wealthwise.ApiService
 import com.example.wealthwise.DataClass.RegistrationData
-import com.github.mikephil.charting.BuildConfig
+import com.example.wealthwise.R
 import java.util.regex.Pattern
 import java.text.SimpleDateFormat
 import java.text.ParseException
@@ -22,7 +22,6 @@ import retrofit2.Callback
 import retrofit2.Response
 import okhttp3.ResponseBody
 import okhttp3.logging.HttpLoggingInterceptor
-import java.io.FileInputStream
 import java.security.KeyStore
 import java.security.SecureRandom
 import java.security.cert.CertificateFactory

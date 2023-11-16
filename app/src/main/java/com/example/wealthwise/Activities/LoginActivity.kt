@@ -1,4 +1,4 @@
-package com.example.wealthwise
+package com.example.wealthwise.Activities
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -8,6 +8,11 @@ import androidx.appcompat.app.AppCompatActivity
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
+import com.example.wealthwise.ApiService
+import com.example.wealthwise.DataClass.LoginData
+import com.example.wealthwise.DataClass.TokenResponse
+import com.example.wealthwise.R
+import com.example.wealthwise.Manager.TokenManager
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Call
@@ -136,5 +141,3 @@ class LoginActivity : AppCompatActivity() {
 }
 
 
-data class LoginData( val email: String, val password: String)
-data class TokenResponse( val tokenAccess: String, val tokenRefresh: String)

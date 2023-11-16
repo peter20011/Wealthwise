@@ -1,9 +1,10 @@
-package com.example.wealthwise
+package com.example.wealthwise.Activities
 
 import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import androidx.activity.ComponentActivity
+import com.example.wealthwise.R
 
 
 class MainActivity : ComponentActivity() {

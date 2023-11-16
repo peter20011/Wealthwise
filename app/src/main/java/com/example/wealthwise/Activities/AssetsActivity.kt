@@ -1,6 +1,5 @@
-package com.example.wealthwise
+package com.example.wealthwise.Activities
 
-import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
 import android.text.InputType
@@ -9,16 +8,16 @@ import android.view.animation.AnimationUtils
 import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import com.example.wealthwise.ApiService
 import com.example.wealthwise.DataClass.AssetsRequest
 import com.example.wealthwise.DataClass.AssetsRequestDelete
 import com.example.wealthwise.DataClass.AssetsRequestListDelete
 import com.example.wealthwise.DataClass.CurrencyData
 import com.example.wealthwise.DataClass.TokenRequest
+import com.example.wealthwise.R
+import com.example.wealthwise.Manager.TokenManager
 import okhttp3.*
 import okhttp3.logging.HttpLoggingInterceptor
-import org.json.JSONArray
-import org.json.JSONException
-import org.json.JSONObject
 import retrofit2.Callback
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -218,7 +217,7 @@ class AssetsActivity : AppCompatActivity() {
         dialog.show()
     }
     private fun  showValueInputDialog() {
-        val valueBuilder = AlertDialog.Builder(this,R.style.AlertDialogTheme)
+        val valueBuilder = AlertDialog.Builder(this, R.style.AlertDialogTheme)
         valueBuilder.setTitle("Podaj Wartość")
 
         // Set up the input field in the AlertDialog
@@ -251,7 +250,7 @@ class AssetsActivity : AppCompatActivity() {
         valueBuilder.show()
     }
     private fun showCurrencyAndValueAlert(currency: String?, value: String) {
-        val alertBuilder = AlertDialog.Builder(this,R.style.AlertDialogTheme)
+        val alertBuilder = AlertDialog.Builder(this, R.style.AlertDialogTheme)
         val tokenManager = TokenManager(this)
         alertBuilder.setTitle("Dodano Aktywo")
         alertBuilder.setMessage("Wybrano walutę: $currency\n\nWartość: $value")
@@ -317,7 +316,7 @@ class AssetsActivity : AppCompatActivity() {
         alertBuilder.show()
     }
     private fun showStocksDialog() {
-        val sharesBuilder = AlertDialog.Builder(this,R.style.AlertDialogTheme)
+        val sharesBuilder = AlertDialog.Builder(this, R.style.AlertDialogTheme)
         sharesBuilder.setTitle("Podaj Wartość")
 
         // Set up the input field in the AlertDialog
@@ -351,7 +350,7 @@ class AssetsActivity : AppCompatActivity() {
         sharesBuilder.show()
     }
     private fun showBondsDialog() {
-        val sharesBuilder = AlertDialog.Builder(this,R.style.AlertDialogTheme)
+        val sharesBuilder = AlertDialog.Builder(this, R.style.AlertDialogTheme)
         sharesBuilder.setTitle("Podaj Wartość")
 
         // Set up the input field in the AlertDialog
@@ -384,7 +383,7 @@ class AssetsActivity : AppCompatActivity() {
         sharesBuilder.show()
     }
     private fun showAssetAndValueAlert(asset: String, value: String) {
-        val alertBuilder = AlertDialog.Builder(this,R.style.AlertDialogTheme)
+        val alertBuilder = AlertDialog.Builder(this, R.style.AlertDialogTheme)
         val tokenManager = TokenManager(this)
         alertBuilder.setTitle("Dodano Aktywo")
         alertBuilder.setMessage("Aktywo: $asset\nWaluta: PLN \nWartość: $value")
@@ -493,7 +492,7 @@ class AssetsActivity : AppCompatActivity() {
         val fadeOutAnimation = AnimationUtils.loadAnimation(this, R.anim.fade_out)
         val animationDuration = fadeOutAnimation.duration
 
-        val dialogBuilder = AlertDialog.Builder(this,R.style.AlertDialogTheme)
+        val dialogBuilder = AlertDialog.Builder(this, R.style.AlertDialogTheme)
         dialogBuilder.setTitle("Potwierdź Usunięcie Aktywów")
         dialogBuilder.setMessage("Czy na pewno chcesz usunąć zaznaczone aktywa?")
 
@@ -504,7 +503,9 @@ class AssetsActivity : AppCompatActivity() {
                     assetsContainer.removeView(assetView)
                 }, animationDuration)
 
-               val assetsRequestDelete = AssetsRequestDelete(assetView.findViewById<TextView>(R.id.assetCurrencyTextView).text.toString(),assetView.findViewById<TextView>(R.id.assetNameTextView).text.toString(),assetView.findViewById<TextView>(R.id.assetValueTextView).text.toString().toDouble())
+               val assetsRequestDelete = AssetsRequestDelete(assetView.findViewById<TextView>(R.id.assetCurrencyTextView).text.toString(),assetView.findViewById<TextView>(
+                   R.id.assetNameTextView
+               ).text.toString(),assetView.findViewById<TextView>(R.id.assetValueTextView).text.toString().toDouble())
                 println(assetsRequestDelete.name)
                 userAssetsDelete.add(assetsRequestDelete)
             }

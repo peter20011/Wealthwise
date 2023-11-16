@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
-
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
     <application
@@ -16,42 +15,43 @@
         android:theme="@style/Theme.Wealthwise"
         tools:targetApi="31">
         <activity
-            android:name=".MainActivity"
+            android:name=".Activities.MainActivity"
             android:exported="true"
-            android:theme="@style/Theme.Wealthwise">
+            android:theme="@style/AppTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <activity
-            android:name=".LoginActivity"
-            android:theme="@style/Theme.AppCompat">
-
-            <!-- Ta aktywność może mieć dodatkowe deklaracje i filtry intencji, jeśli są potrzebne -->
+            android:name=".Activities.LoginActivity"
+            android:theme="@style/AppTheme"
+            android:exported="true">
         </activity>
         <activity
-            android:name=".RegistrationActivity"
-            android:theme="@style/Theme.AppCompat">
-            <!-- Ta aktywność może mieć dodatkowe deklaracje i filtry intencji, jeśli są potrzebne -->
+            android:name=".Activities.RegistrationActivity"
+            android:theme="@style/AppTheme"
+            android:exported="true">
         </activity>
         <activity
-            android:name=".DashboardActivity"
-            android:theme="@style/Theme.AppCompat">
+            android:name=".Activities.DashboardActivity"
+            android:theme="@style/AppTheme"
+            android:exported="true">
         </activity>
         <activity
-            android:name=".UserProfileActivity"
-            android:theme="@style/Theme.AppCompat">
+            android:name=".Activities.UserProfileActivity"
+            android:theme="@style/AppTheme"
+            android:exported="true">
         </activity>
         <activity
-            android:name=".StatisticActivity"
-            android:theme="@style/Theme.AppCompat">
+            android:name=".Activities.StatisticActivity"
+            android:theme="@style/AppTheme"
+            android:exported="true">
         </activity>
         <activity
-            android:name=".AssetsActivity"
-            android:theme="@style/Theme.AppCompat">
+            android:name=".Activities.AssetsActivity"
+            android:theme="@style/AppTheme"
+            android:exported="true">
         </activity>
     </application>
-
 </manifest>

@@ -1,4 +1,4 @@
-package com.example.wealthwise
+package com.example.wealthwise.Manager
 
 import android.content.Context
 import android.content.SharedPreferences
@@ -9,7 +9,10 @@ import android.security.keystore.KeyProperties
 import android.util.Base64
 import android.util.Log
 import androidx.annotation.RequiresApi
+import com.example.wealthwise.ApiService
 import com.example.wealthwise.DataClass.RefreshToken
+import com.example.wealthwise.DataClass.TokenResponse
+import com.example.wealthwise.R
 
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -19,9 +22,7 @@ import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import java.io.InputStream
 import java.nio.charset.StandardCharsets
-import java.security.DigestOutputStream
 import java.security.KeyStore
 import java.security.SecureRandom
 import java.security.cert.CertificateFactory
@@ -32,7 +33,6 @@ import javax.crypto.SecretKey
 import javax.crypto.spec.IvParameterSpec
 import javax.net.ssl.SSLContext
 import javax.net.ssl.TrustManagerFactory
-import kotlin.coroutines.coroutineContext
 
 @RequiresApi(Build.VERSION_CODES.M)
 class TokenManager(context: Context) {

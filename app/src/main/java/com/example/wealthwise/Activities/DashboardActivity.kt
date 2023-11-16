@@ -1,11 +1,10 @@
-package com.example.wealthwise
+package com.example.wealthwise.Activities
 
 
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.text.InputType
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -13,6 +12,7 @@ import android.view.animation.AnimationUtils
 import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import com.example.wealthwise.ApiService
 import com.example.wealthwise.DataClass.Expense
 import com.example.wealthwise.DataClass.ExpenseRequest
 import com.example.wealthwise.DataClass.ExpenseResponse
@@ -20,12 +20,13 @@ import com.example.wealthwise.DataClass.IncomeRequest
 import com.example.wealthwise.DataClass.IncomeResponse
 import com.example.wealthwise.DataClass.TokenRequest
 import com.example.wealthwise.DataClass.UserDataResponse
+import com.example.wealthwise.R
+import com.example.wealthwise.Manager.TokenManager
 import com.github.mikephil.charting.charts.PieChart
 import com.github.mikephil.charting.components.Legend
 import com.github.mikephil.charting.data.PieData
 import com.github.mikephil.charting.data.PieDataSet
 import com.github.mikephil.charting.data.PieEntry
-import com.github.mikephil.charting.formatter.PercentFormatter
 import okhttp3.OkHttpClient
 import okhttp3.ResponseBody
 import okhttp3.logging.HttpLoggingInterceptor
@@ -42,7 +43,6 @@ import java.time.LocalDate
 import javax.net.ssl.SSLContext
 import javax.net.ssl.TrustManagerFactory
 import javax.net.ssl.X509TrustManager
-import kotlin.math.log
 
 
 class DashboardActivity : AppCompatActivity() {

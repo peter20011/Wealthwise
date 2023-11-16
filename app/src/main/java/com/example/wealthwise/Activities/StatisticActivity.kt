@@ -1,4 +1,4 @@
-package com.example.wealthwise
+package com.example.wealthwise.Activities
 
 
 import android.content.Intent
@@ -8,8 +8,12 @@ import android.widget.ImageView
 import android.widget.ListView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.example.wealthwise.ApiService
+import com.example.wealthwise.Adapters.ChartAdapter
 import com.example.wealthwise.DataClass.StatisticResponse
 import com.example.wealthwise.DataClass.TokenRequest
+import com.example.wealthwise.R
+import com.example.wealthwise.Manager.TokenManager
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Call
