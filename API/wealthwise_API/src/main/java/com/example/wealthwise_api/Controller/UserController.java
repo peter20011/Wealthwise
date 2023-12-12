@@ -28,8 +28,13 @@ public class UserController {
     }
 
     @PostMapping(value="/getDataUser", produces = MediaType.APPLICATION_JSON_VALUE )
-    public ResponseEntity<?> getData(@RequestBody TokenRequest tokenResponse){
-        return  userService.getDataUser(tokenResponse);
+    public ResponseEntity<?> getData(@RequestBody TokenRequest tokenRequest){
+        return  userService.getDataUser(tokenRequest);
+    }
+
+    @PostMapping(value="/deleteUser", produces = MediaType.APPLICATION_JSON_VALUE )
+    public ResponseEntity<?> deleteUser(@RequestBody TokenRequest tokenRequest){
+        return  userService.deleteUser(tokenRequest);
     }
 
 }

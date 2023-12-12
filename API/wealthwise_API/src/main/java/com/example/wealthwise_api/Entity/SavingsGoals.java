@@ -2,6 +2,7 @@ package com.example.wealthwise_api.Entity;
 
 
 import jakarta.persistence.*;
+import org.jetbrains.annotations.NotNull;
 
 @Entity
 @Table(name = "savings_goals")
@@ -10,6 +11,7 @@ public class SavingsGoals {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long idSavingsGoals;
     @Column(nullable = false)
+    @NotNull
     private String name;
     @Column(nullable = false)
     private double targetAmount;
@@ -24,7 +26,7 @@ public class SavingsGoals {
     public SavingsGoals() {
     }
 
-    public SavingsGoals(String name, double targetAmount, double currentAmount, boolean status, UserEntity userEntity) {
+    public SavingsGoals(@NotNull String name, @NotNull double targetAmount, @NotNull double currentAmount, @NotNull boolean status, @NotNull UserEntity userEntity) {
         this.name = name;
         this.targetAmount = targetAmount;
         this.currentAmount = currentAmount;

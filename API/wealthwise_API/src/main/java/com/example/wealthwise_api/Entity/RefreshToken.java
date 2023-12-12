@@ -1,6 +1,7 @@
 package com.example.wealthwise_api.Entity;
 
 import jakarta.persistence.*;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Date;
 
@@ -23,7 +24,7 @@ public class RefreshToken {
     public RefreshToken() {
     }
 
-    public RefreshToken(String token, String subject, Date expirationTime) {
+    public RefreshToken(@NotNull String token, @NotNull String subject, @NotNull Date expirationTime) {
         this.token = token;
         this.subject = subject;
         this.expirationTime = expirationTime;

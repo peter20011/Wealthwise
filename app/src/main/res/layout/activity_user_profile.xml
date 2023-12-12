@@ -123,6 +123,16 @@
         android:background="@drawable/rounded_button"
         android:onClick="showResetPasswordDialog" />
 
+        <Button
+            android:id="@+id/deleteAccountButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Usuń konto"
+            android:layout_gravity="center"
+            android:layout_marginTop="16dp"
+            android:textColor="#FFFFFF"
+            android:background="@drawable/rounded_button" />
+
     <Button
         android:id="@+id/addSavingsGoalButton"
         android:layout_width="match_parent"

@@ -37,9 +37,4 @@ public class AuthenticationController {
         return authenticationService.refreshToken(refreshToken);
     }
 
-    @GetMapping(value = "/test", produces = MediaType.APPLICATION_JSON_VALUE)
-    public String test(){
-        return "Hello World";
-    }
-
 }

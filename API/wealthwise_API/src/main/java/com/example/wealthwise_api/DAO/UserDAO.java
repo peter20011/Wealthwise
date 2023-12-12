@@ -14,4 +14,6 @@ public interface UserDAO {
 
     UserDataRequest getData(String email);
 
+    void deleteUser(UserEntity userEntity);
+
 }

@@ -48,7 +48,7 @@ public class SecurityFilterChainConfig {
          http
                  .x509(x509->x509
                 .subjectPrincipalRegex("CN=Wealthwise"))
-                .csrf(csrf->csrf.disable())
+                 .csrf(csrf->csrf.disable())
                 .cors(Customizer.withDefaults())
                 .exceptionHandling(exceptionalHandling->exceptionalHandling
                         .authenticationEntryPoint(authenticationEntryPoint)
@@ -64,7 +64,8 @@ public class SecurityFilterChainConfig {
                         .logoutSuccessHandler((request, response, authentication) -> {
                             SecurityContextHolder.clearContext();
                         })
-                ).requiresChannel(channel->channel.anyRequest().requiresSecure());
+                )
+                 .requiresChannel(channel->channel.anyRequest().requiresSecure());
 
 
          return http.build();

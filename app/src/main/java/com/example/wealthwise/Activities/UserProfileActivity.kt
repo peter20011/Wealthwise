@@ -46,7 +46,8 @@ class UserProfileActivity : AppCompatActivity() {
     private lateinit var emailTextView: TextView
     private lateinit var birthDateTextView: TextView
     private lateinit var resetPasswordButton: Button
-    private lateinit var addSavingsGoalButton : Button
+    private lateinit var addSavingsGoalButton: Button
+    private lateinit var deleteAccountButton: Button
     private var savingsGoals = mutableListOf<SavingsGoal>()
     private lateinit var adapter: SavingsGoalAdapter
     private val BASE_URL = "https://10.0.2.2:8443"
@@ -57,14 +58,14 @@ class UserProfileActivity : AppCompatActivity() {
         val tokenAccess = tokenManager.getTokenAccess()
         val tokenRefresh = tokenManager.getTokenRefresh()
 
-        if(tokenAccess == null || tokenRefresh == null){
+        if (tokenAccess == null || tokenRefresh == null) {
             val intent = Intent(this, LoginActivity::class.java)
             startActivity(intent)
             finish()
             Toast.makeText(this, "Brak uprawnień", Toast.LENGTH_SHORT).show()
         }
 
-        if(tokenManager.refreshTokenIfNeeded(resources)){
+        if (tokenManager.refreshTokenIfNeeded(resources)) {
             Toast.makeText(this, "Token odświeżony", Toast.LENGTH_SHORT).show()
         }
 
@@ -77,23 +78,26 @@ class UserProfileActivity : AppCompatActivity() {
         emailTextView = findViewById(R.id.emailTextView)
         birthDateTextView = findViewById(R.id.birthDateTextView)
         resetPasswordButton = findViewById(R.id.resetPasswordButton)
+        deleteAccountButton = findViewById(R.id.deleteAccountButton)
         addSavingsGoalButton = findViewById(R.id.addSavingsGoalButton)
 
         val recyclerView = findViewById<RecyclerView>(R.id.savingsRecyclerView)
         recyclerView.layoutManager = LinearLayoutManager(this)
-        adapter = SavingsGoalAdapter(savingsGoals,resources)
+        adapter = SavingsGoalAdapter(savingsGoals, resources)
         recyclerView.adapter = adapter
 
         val interceptor = HttpLoggingInterceptor()
         interceptor.level = HttpLoggingInterceptor.Level.BODY
 
-        val trustManagerFactory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm())
+        val trustManagerFactory =
+            TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm())
         val keyStore = KeyStore.getInstance(KeyStore.getDefaultType())
         keyStore.load(null, null)
 
         val certificateFactory = CertificateFactory.getInstance("X.509")
         val certificateInputStream1 = resources.openRawResource(R.raw.ca)
-        val yourTrustedCertificate1 = certificateFactory.generateCertificate(certificateInputStream1) as X509Certificate
+        val yourTrustedCertificate1 =
+            certificateFactory.generateCertificate(certificateInputStream1) as X509Certificate
         certificateInputStream1.close()
 
 
@@ -120,7 +124,7 @@ class UserProfileActivity : AppCompatActivity() {
 
         val tokenRequest = TokenRequest(tokenManager.getTokenAccess().toString())
 
-        val call = apiService.getUserData(authHeader,tokenRequest)
+        val call = apiService.getUserData(authHeader, tokenRequest)
 
         call.enqueue(object : Callback<UserDataResponse> {
             override fun onResponse(
@@ -133,20 +137,29 @@ class UserProfileActivity : AppCompatActivity() {
                     lastNameTextView.text = "Nazwisko: " + userDataResponse?.surname
                     emailTextView.text = "Email: " + userDataResponse?.email
                     birthDateTextView.text = "Data urodzenia: " + userDataResponse?.birthDay
-                }else{
+                } else {
                     firstNameTextView.text = "Imię: Brak danych"
                     lastNameTextView.text = "Nazwisko: Brak danych"
                     emailTextView.text = "Email: Brak danych"
                     birthDateTextView.text = "Data urodzenia: Brak danych"
-                    Toast.makeText(this@UserProfileActivity, "Wystąpił błąd podczas pobierania danych użytkownika", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        this@UserProfileActivity,
+                        "Wystąpił błąd podczas pobierania danych użytkownika",
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
             }
+
             override fun onFailure(call: Call<UserDataResponse>, t: Throwable) {
-                Toast.makeText(this@UserProfileActivity, "Wystąpił błąd podczas pobierania danych użytkownika: " + t.message, Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    this@UserProfileActivity,
+                    "Wystąpił błąd podczas pobierania danych użytkownika: " + t.message,
+                    Toast.LENGTH_SHORT
+                ).show()
             }
         })
 
-        val call2 = apiService.getSavingsGoal(authHeader,tokenRequest)
+        val call2 = apiService.getSavingsGoal(authHeader, tokenRequest)
 
         call2.enqueue(object : Callback<List<SavingsGoal>> {
             override fun onResponse(
@@ -159,12 +172,21 @@ class UserProfileActivity : AppCompatActivity() {
                         savingsGoals.addAll(savingsGoalResponse)
                         adapter.notifyDataSetChanged()
                     }
-                }else{
-                    Toast.makeText(this@UserProfileActivity, "Wystąpił błąd podczas pobierania celu oszczędzania", Toast.LENGTH_SHORT).show()
+                } else {
+                    Toast.makeText(
+                        this@UserProfileActivity,
+                        "Wystąpił błąd podczas pobierania celu oszczędzania",
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
             }
+
             override fun onFailure(call: Call<List<SavingsGoal>>, t: Throwable) {
-                Toast.makeText(this@UserProfileActivity, "Wystąpił błąd podczas pobierania  celu oszczędzania: " + t.message, Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    this@UserProfileActivity,
+                    "Wystąpił błąd podczas pobierania  celu oszczędzania: " + t.message,
+                    Toast.LENGTH_SHORT
+                ).show()
             }
         })
 
@@ -185,13 +207,13 @@ class UserProfileActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
-        statisticIcon.setOnClickListener{
-            val intent=Intent(this, StatisticActivity::class.java)
+        statisticIcon.setOnClickListener {
+            val intent = Intent(this, StatisticActivity::class.java)
             startActivity(intent)
         }
 
-        assetsIcon.setOnClickListener{
-            val intent=Intent(this, AssetsActivity::class.java)
+        assetsIcon.setOnClickListener {
+            val intent = Intent(this, AssetsActivity::class.java)
             startActivity(intent)
         }
 
@@ -199,13 +221,17 @@ class UserProfileActivity : AppCompatActivity() {
             showResetPasswordDialog()
         }
 
-        addSavingsGoalButton.setOnClickListener{
+        deleteAccountButton.setOnClickListener {
+            showDeleteAccountDialog()
+        }
+
+        addSavingsGoalButton.setOnClickListener {
             addSavingsGoal(adapter)
         }
     }
 
     // Metoda do wyświetlenia dwuetapowego okna dialogowego do resetowania hasła
-     fun showResetPasswordDialog() {
+    fun showResetPasswordDialog() {
         val builder = AlertDialog.Builder(this, R.style.AlertDialogTheme)
         builder.setTitle("Podaj obecne hasło")
 
@@ -238,24 +264,29 @@ class UserProfileActivity : AppCompatActivity() {
                 val passwordPattern = "^[a-zA-Z]{6,9}\\d$"
 
                 // Tutaj można dodać logikę do zmiany hasła na serwerze lub w lokalnym składowisku
-                if (currentPassword.isNotEmpty() && newPassword.isNotEmpty() && Pattern.matches(passwordPattern, newPassword)){
+                if (currentPassword.isNotEmpty() && newPassword.isNotEmpty() && Pattern.matches(
+                        passwordPattern,
+                        newPassword
+                    )
+                ) {
                     val tokenManager = TokenManager(this)
-                    if(tokenManager.refreshTokenIfNeeded(resources)){
+                    if (tokenManager.refreshTokenIfNeeded(resources)) {
                         Toast.makeText(this, "Token odświeżony", Toast.LENGTH_SHORT).show()
                     }
-
 
 
                     val interceptor = HttpLoggingInterceptor()
                     interceptor.level = HttpLoggingInterceptor.Level.BODY
 
-                    val trustManagerFactory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm())
+                    val trustManagerFactory =
+                        TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm())
                     val keyStore = KeyStore.getInstance(KeyStore.getDefaultType())
                     keyStore.load(null, null)
 
                     val certificateFactory = CertificateFactory.getInstance("X.509")
                     val certificateInputStream1 = resources.openRawResource(R.raw.ca)
-                    val yourTrustedCertificate1 = certificateFactory.generateCertificate(certificateInputStream1) as X509Certificate
+                    val yourTrustedCertificate1 =
+                        certificateFactory.generateCertificate(certificateInputStream1) as X509Certificate
                     certificateInputStream1.close()
 
 
@@ -267,7 +298,10 @@ class UserProfileActivity : AppCompatActivity() {
                     sslContext.init(null, trustManagers, SecureRandom())
 
                     val client = OkHttpClient.Builder()
-                        .sslSocketFactory(sslContext.socketFactory, trustManagers[0] as X509TrustManager)
+                        .sslSocketFactory(
+                            sslContext.socketFactory,
+                            trustManagers[0] as X509TrustManager
+                        )
                         .addInterceptor(interceptor)
                         .build()
 
@@ -278,7 +312,11 @@ class UserProfileActivity : AppCompatActivity() {
                         .build()
 
                     val authHeader = "Bearer " + tokenManager.getTokenAccess().toString()
-                    val changePassword = ChangePassword(tokenManager.getTokenAccess().toString(),currentPassword, newPassword)
+                    val changePassword = ChangePassword(
+                        tokenManager.getTokenAccess().toString(),
+                        currentPassword,
+                        newPassword
+                    )
                     val apiService = retrofit.create(ApiService::class.java)
 
                     val call = apiService.changePassword(authHeader, changePassword)
@@ -289,18 +327,35 @@ class UserProfileActivity : AppCompatActivity() {
                             response: Response<ResponseBody>
                         ) {
                             if (response.isSuccessful) {
-                                Toast.makeText(this@UserProfileActivity, "Hasło zostało zmienione", Toast.LENGTH_SHORT).show()
-                            }else{
-                                Toast.makeText(this@UserProfileActivity, "Wystąpił błąd podczas zmiany hasła", Toast.LENGTH_SHORT).show()
+                                Toast.makeText(
+                                    this@UserProfileActivity,
+                                    "Hasło zostało zmienione",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            } else {
+                                Toast.makeText(
+                                    this@UserProfileActivity,
+                                    "Wystąpił błąd podczas zmiany hasła",
+                                    Toast.LENGTH_SHORT
+                                ).show()
                             }
                         }
+
                         override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
-                            Toast.makeText(this@UserProfileActivity, "Wystąpił błąd podczas zmiany hasła: " + t.message, Toast.LENGTH_SHORT).show()
+                            Toast.makeText(
+                                this@UserProfileActivity,
+                                "Wystąpił błąd podczas zmiany hasła: " + t.message,
+                                Toast.LENGTH_SHORT
+                            ).show()
                         }
                     })
 
                 } else {
-                    Toast.makeText(this@UserProfileActivity, "Błąd podczas zmiany hasła. Sprawdź dane i spróbuj ponownie.", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        this@UserProfileActivity,
+                        "Błąd podczas zmiany hasła. Sprawdź dane i spróbuj ponownie.",
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
             }
 
@@ -350,19 +405,22 @@ class UserProfileActivity : AppCompatActivity() {
                 val savingsCosts = newSavingsInput.text.toString()
 
                 if (savingsGoalTopic.isNotEmpty() && savingsCosts.isNotEmpty()) {
-                    val newSavingsGoal = SavingsGoal(savingsGoalTopic, 0.0, savingsCosts.toDouble(), true)
+                    val newSavingsGoal =
+                        SavingsGoal(savingsGoalTopic, 0.0, savingsCosts.toDouble(), true)
                     savingsGoals.add(newSavingsGoal)
 
                     val interceptor = HttpLoggingInterceptor()
                     interceptor.level = HttpLoggingInterceptor.Level.BODY
 
-                    val trustManagerFactory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm())
+                    val trustManagerFactory =
+                        TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm())
                     val keyStore = KeyStore.getInstance(KeyStore.getDefaultType())
                     keyStore.load(null, null)
 
                     val certificateFactory = CertificateFactory.getInstance("X.509")
                     val certificateInputStream1 = resources.openRawResource(R.raw.ca)
-                    val yourTrustedCertificate1 = certificateFactory.generateCertificate(certificateInputStream1) as X509Certificate
+                    val yourTrustedCertificate1 =
+                        certificateFactory.generateCertificate(certificateInputStream1) as X509Certificate
                     certificateInputStream1.close()
 
 
@@ -374,7 +432,10 @@ class UserProfileActivity : AppCompatActivity() {
                     sslContext.init(null, trustManagers, SecureRandom())
 
                     val client = OkHttpClient.Builder()
-                        .sslSocketFactory(sslContext.socketFactory, trustManagers[0] as X509TrustManager)
+                        .sslSocketFactory(
+                            sslContext.socketFactory,
+                            trustManagers[0] as X509TrustManager
+                        )
                         .addInterceptor(interceptor)
                         .build()
 
@@ -387,8 +448,13 @@ class UserProfileActivity : AppCompatActivity() {
                     val authHeader = "Bearer " + tokenManager.getTokenAccess().toString()
                     val apiService = retrofit.create(ApiService::class.java)
 
-                    val call = apiService.createSavingsGoal(authHeader,
-                        SavingsGoalRequest(tokenManager.getTokenAccess().toString(), savingsGoalTopic, savingsCosts.toDouble())
+                    val call = apiService.createSavingsGoal(
+                        authHeader,
+                        SavingsGoalRequest(
+                            tokenManager.getTokenAccess().toString(),
+                            savingsGoalTopic,
+                            savingsCosts.toDouble()
+                        )
                     )
 
                     call.enqueue(object : Callback<ResponseBody> {
@@ -397,13 +463,26 @@ class UserProfileActivity : AppCompatActivity() {
                             response: Response<ResponseBody>
                         ) {
                             if (response.isSuccessful) {
-                                Toast.makeText(this@UserProfileActivity, "Cel oszczędzania został dodany", Toast.LENGTH_SHORT).show()
-                            }else{
-                                Toast.makeText(this@UserProfileActivity, "Wystąpił błąd podczas dodawania celu oszczędzania", Toast.LENGTH_SHORT).show()
+                                Toast.makeText(
+                                    this@UserProfileActivity,
+                                    "Cel oszczędzania został dodany",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            } else {
+                                Toast.makeText(
+                                    this@UserProfileActivity,
+                                    "Wystąpił błąd podczas dodawania celu oszczędzania",
+                                    Toast.LENGTH_SHORT
+                                ).show()
                             }
                         }
+
                         override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
-                            Toast.makeText(this@UserProfileActivity, "Wystąpił błąd podczas dodawania celu oszczędzania: " + t.message, Toast.LENGTH_SHORT).show()
+                            Toast.makeText(
+                                this@UserProfileActivity,
+                                "Wystąpił błąd podczas dodawania celu oszczędzania: " + t.message,
+                                Toast.LENGTH_SHORT
+                            ).show()
                         }
                     })
 
@@ -427,4 +506,71 @@ class UserProfileActivity : AppCompatActivity() {
         builder.show()
     }
 
+    fun showDeleteAccountDialog() {
+        val builder = AlertDialog.Builder(this, R.style.AlertDialogTheme)
+        builder.setTitle("Czy chcesz usunąć konto?")
+
+        builder.setPositiveButton("Tak") { _, _ ->
+            val tokenManager = TokenManager(this)
+            val interceptor = HttpLoggingInterceptor()
+            interceptor.level = HttpLoggingInterceptor.Level.BODY
+
+            val trustManagerFactory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm())
+            val keyStore = KeyStore.getInstance(KeyStore.getDefaultType())
+            keyStore.load(null, null)
+
+            val certificateFactory = CertificateFactory.getInstance("X.509")
+            val certificateInputStream1 = resources.openRawResource(R.raw.ca)
+            val yourTrustedCertificate1 = certificateFactory.generateCertificate(certificateInputStream1) as X509Certificate
+            certificateInputStream1.close()
+
+            keyStore.setCertificateEntry("ca", yourTrustedCertificate1)
+            trustManagerFactory.init(keyStore)
+            val trustManagers = trustManagerFactory.trustManagers
+
+            val sslContext = SSLContext.getInstance("TLS")
+            sslContext.init(null, trustManagers, SecureRandom())
+
+            val client = OkHttpClient.Builder()
+                .sslSocketFactory(sslContext.socketFactory, trustManagers[0] as X509TrustManager)
+                .addInterceptor(interceptor)
+                .build()
+
+            val retrofit = Retrofit.Builder()
+                .baseUrl(BASE_URL)
+                .addConverterFactory(GsonConverterFactory.create())
+                .client(client)
+                .build()
+
+            val authHeader = "Bearer " + tokenManager.getTokenAccess().toString()
+            val apiService = retrofit.create(ApiService::class.java)
+
+            val call = apiService.deleteUser(authHeader, TokenRequest(tokenManager.getTokenAccess().toString()))
+
+            call.enqueue(object : Callback<ResponseBody> {
+                override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
+                    if(response.isSuccessful) {
+                        Toast.makeText(this@UserProfileActivity, "Konto zostało usunięte", Toast.LENGTH_SHORT).show()
+                        tokenManager.clearToken()
+                        val intent = Intent(this@UserProfileActivity, LoginActivity::class.java)
+                        startActivity(intent)
+                        finish()
+                    } else {
+                        Toast.makeText(this@UserProfileActivity, "Wystąpił błąd podczas usuwania konta", Toast.LENGTH_SHORT).show()
+                    }
+                }
+
+                override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
+                    Toast.makeText(this@UserProfileActivity, "Wystąpił błąd podczas usuwania konta: " + t.message, Toast.LENGTH_SHORT).show()
+                }
+            })
+        }
+
+        builder.setNegativeButton("Nie") { dialog, _ ->
+            dialog.cancel()
+        }
+
+        builder.show()
+    }
 }
+

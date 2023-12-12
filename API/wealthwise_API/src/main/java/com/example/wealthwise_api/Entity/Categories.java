@@ -1,6 +1,7 @@
 package com.example.wealthwise_api.Entity;
 
 import jakarta.persistence.*;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Set;
 
@@ -18,7 +19,7 @@ public class Categories {
     @OneToMany(mappedBy = "category",fetch = FetchType.LAZY,cascade = CascadeType.ALL)
     private Set<Expenses> expenses ;
 
-    public Categories(String name) {
+    public Categories(@NotNull String name) {
         this.name = name;
     }
 

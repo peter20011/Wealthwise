@@ -1,6 +1,7 @@
 package com.example.wealthwise_api.Entity;
 
 import jakarta.persistence.*;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Date;
 
@@ -22,7 +23,7 @@ public class Incomes {
     @JoinColumn(name = "idUser",nullable = false)
     private UserEntity userEntity;
 
-    public Incomes(double value, Date createdDate, UserEntity userEntity) {
+    public Incomes(@NotNull double value, @NotNull Date createdDate, @NotNull UserEntity userEntity) {
         this.value = value;
         this.createdDate = createdDate;
         this.userEntity = userEntity;

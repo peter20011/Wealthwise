@@ -45,7 +45,6 @@ class TokenManager(context: Context) {
         return existingKey?.secretKey?: createKey()
     }
 
-
     private fun createKey() : SecretKey {
         return KeyGenerator.getInstance(ALGORITHM).apply {
             init(KeyGenParameterSpec.Builder("secret", KeyProperties.PURPOSE_ENCRYPT or KeyProperties.PURPOSE_DECRYPT)
@@ -56,7 +55,6 @@ class TokenManager(context: Context) {
                 .build())
         }.generateKey()
     }
-
 
     fun encrypt(token:String) : String?{
        return try{

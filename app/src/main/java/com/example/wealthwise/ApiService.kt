@@ -42,6 +42,8 @@ interface ApiService {
     fun changePassword(@Header("Authorization") token: String, @Body changePassword: ChangePassword) : Call<ResponseBody>
     @POST("/user/getDataUser")
     fun getUserData(@Header("Authorization") token: String, @Body tokenRequest: TokenRequest) : Call<UserDataResponse>
+    @POST("/user/deleteUser")
+    fun deleteUser(@Header("Authorization") token: String, @Body tokenRequest: TokenRequest) : Call<ResponseBody>
     @POST("/savingsGoal/createSavingsGoal")
     fun createSavingsGoal(@Header("Authorization") token: String, @Body savingsGoalRequest: SavingsGoalRequest) : Call<ResponseBody>
     @POST("/savingsGoal/addCashSavingsGoal")

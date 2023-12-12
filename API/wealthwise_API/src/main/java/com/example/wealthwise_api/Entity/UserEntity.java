@@ -3,11 +3,12 @@ package com.example.wealthwise_api.Entity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import jakarta.persistence.*;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.time.LocalDate;
+
 import java.util.*;
 
 
@@ -17,6 +18,7 @@ public class UserEntity  implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long idUser;
+
     @Column(nullable = false,
             unique = true)
     private String email;
@@ -42,7 +44,8 @@ public class UserEntity  implements UserDetails {
     @OneToMany(mappedBy = "userEntity",fetch = FetchType.LAZY,cascade = CascadeType.ALL)
     private Set<Expenses> expensesSet;
 
-    public UserEntity(long idUser, String email, String password, String username, String surname, String birthDay, Role role) {
+    public UserEntity( @NotNull long idUser,@NotNull  String email, @NotNull String password,
+                       @NotNull String username,@NotNull String surname,@NotNull String birthDay,@NotNull Role role) {
         this.idUser = idUser;
         this.email = email;
         this.password = password;
@@ -52,7 +55,7 @@ public class UserEntity  implements UserDetails {
         this.role = role;
     }
 
-    public UserEntity(String email, String password, String name, String surname, String birthDay, Role role) {
+    public UserEntity(@NotNull String email, @NotNull String password, @NotNull String name, @NotNull String surname, @NotNull String birthDay, @NotNull Role role) {
         this.email = email;
         this.password = password;
         this.name = name;

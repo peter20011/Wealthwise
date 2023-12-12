@@ -2,6 +2,8 @@ package com.example.wealthwise_api.Entity;
 
 
 import jakarta.persistence.*;
+import org.jetbrains.annotations.NotNull;
+
 import java.time.LocalDate;
 
 
@@ -26,7 +28,7 @@ public class Assets {
     @JoinColumn(name = "idUser",nullable = false)
     private UserEntity userEntity;
 
-    public Assets(double value, String currency, String name, UserEntity userEntity) {
+    public Assets(@NotNull double value, @NotNull String currency, @NotNull String name, @NotNull UserEntity userEntity) {
         this.value = value;
         this.currency = currency;
         this.name = name;

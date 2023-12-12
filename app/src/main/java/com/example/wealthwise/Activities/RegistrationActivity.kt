@@ -11,6 +11,7 @@ import android.widget.Toast
 import com.example.wealthwise.ApiService
 import com.example.wealthwise.DataClass.RegistrationData
 import com.example.wealthwise.R
+
 import java.util.regex.Pattern
 import java.text.SimpleDateFormat
 import java.text.ParseException
@@ -88,13 +89,16 @@ class RegistrationActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
 
+            //            val passwordPattern = "^[a-zA-Z]{7,9}\\d$"
+
             // Walidacja hasła
-            val passwordPattern = "^[a-zA-Z]{6,9}\\d$"
+            val passwordPattern = "^[a-zA-Z]{7,}\\d*$"
+
 
             if (!Pattern.matches(passwordPattern, password) || password != confirmPassword) {
                 Toast.makeText(
                     this,
-                    "Nieprawidłowe hasło lub hasło nie pasuje do powtórzonego hasła",
+                    "Hasło nie spełnia wymagań lub hasło nie pasuje do powtórzonego hasła",
                     Toast.LENGTH_SHORT
                 ).show()
                 return@setOnClickListener

@@ -41,4 +41,9 @@ public class UserJPADataAccessService  implements UserDAO{
         return userEntityRepository.getUserData(email);
     }
 
+    @Override
+    public void deleteUser(UserEntity userEntity) {
+        userEntityRepository.delete(userEntity);
+    }
+
 }

@@ -28,7 +28,6 @@ public class AuthenticationService {
     private final UserEntityDTOMapper userEntityDTOMapper;
     private final JWTokenRefreshRepository jwtTokenRefreshRepository;
     private final JWTokenAccessRepository jwtTokenAccessRepository;
-
     private final UserEntityRepository userEntityRepository;
     private final JWTUtil jwtUtil;
     private static final Logger logger = LoggerFactory.getLogger(AuthenticationService.class);
